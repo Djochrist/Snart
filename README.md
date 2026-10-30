@@ -37,16 +37,20 @@ API Python (FastAPI)
         └── SQLite : signalements, confirmations et médias
 ```
 
-La PWA met en cache son interface et conserve les signalements hors ligne en attente d’envoi. La carte, l’API et la structuration nécessitent une connexion ; les signalements en attente sont présentés comme tels jusqu’à leur synchronisation. Les modèles et clés d’accès ne sont pas stockés dans Git.
+La PWA met en cache son interface et conserve les signalements hors ligne en attente d’envoi. La carte, l’API et la structuration nécessitent une connexion ; les signalements en attente sont présentés comme tels jusqu’à leur synchronisation. Le service de structuration utilise l’API Google Gemini (`gemini-3.5-flash-lite`) pour proposer une catégorie et un résumé. Seule la description textuelle du problème est transmise à Gemini ; les coordonnées, l’heure et la photo restent côté serveur. La clé sert à authentifier l’appel côté serveur et n’est jamais fournie au navigateur. Les requêtes Gemini sont configurées sans conservation des interactions (`store=false`). Sans clé ou si l’API est indisponible, une structuration locale par règles prend le relais et sa provenance reste visible. Les clés d’accès ne sont pas stockées dans Git.
 
 ## Démarrage local
 
 Prérequis : Python pris en charge par le projet et `uv` installé.
 
 ```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+# Ajouter GEMINI_API_KEY dans .env ; la clé n’est jamais utilisée par le navigateur.
 uv sync
 uv run uvicorn snart_api.main:app --app-dir backend --reload
 ```
+
+Le service accepte également le fichier local `.env.txt` déjà utilisé dans certains environnements. `SNART_MODEL_ID` choisit le modèle ; `AI_MODEL` reste accepté comme alias pour la configuration locale existante. Si aucune clé valide n’est disponible, les signalements restent utilisables avec le structurant local de secours.
 
 Ouvrir ensuite `http://127.0.0.1:8000`. Le serveur fournit l’interface, les ressources PWA et l’API. La base SQLite de développement est créée localement dans `data/` et n’est pas versionnée.
 
@@ -73,7 +77,7 @@ Le format détaillé, les champs, les limites et la politique de score figurent 
 
 ## État du prototype
 
-Le dépôt fournit un parcours fonctionnel avec une structuration de démonstration fondée sur des règles simples. Le contrat `structure_report()` isole le moteur afin qu’un modèle ouvert puisse être intégré sans modifier l’API ni l’interface. Aucun identifiant de modèle n’est imposé à ce stade.
+Le dépôt fournit un parcours fonctionnel avec une structuration Gemini et un secours local fondé sur des règles. Le contrat `structure_report()` isole le moteur du reste de l’API. Le modèle propose une catégorie et un résumé ; il ne vérifie ni l’heure, ni la position, ni la vérité terrain. Une description ambiguë est marquée pour révision humaine.
 
 ## Licence
 

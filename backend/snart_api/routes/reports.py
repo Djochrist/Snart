@@ -194,7 +194,7 @@ async def create_report(
     if (now - observed).total_seconds() > 30 * 24 * 3600:
         observed = now - timedelta(days=30)
 
-    structured: StructuredReport = structure_report(description, category_override)
+    structured: StructuredReport = await structure_report(description, category_override)
     photo_bytes, photo_mime = await _read_photo(photo)
     created = _now_iso()
     with closing(connect()) as connection:

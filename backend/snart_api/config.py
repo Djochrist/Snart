@@ -8,7 +8,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-load_dotenv(PROJECT_ROOT / ".env")
+ENV_FILE = PROJECT_ROOT / ".env"
+if not ENV_FILE.exists():
+    ENV_FILE = PROJECT_ROOT / ".env.txt"
+load_dotenv(ENV_FILE)
 
 
 def _path_from_env(name: str, default: str) -> Path:

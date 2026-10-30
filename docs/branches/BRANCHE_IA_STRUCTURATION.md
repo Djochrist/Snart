@@ -2,7 +2,7 @@
 
 ## Périmètre
 
-Intégrer le modèle ouvert retenu au service de structuration, sans coupler le modèle aux routes HTTP ni au code d’interface.
+Intégrer Google Gemini au service de structuration, sans coupler le fournisseur aux routes HTTP ni au code d’interface.
 
 ## Capacités attendues
 
@@ -10,8 +10,8 @@ Intégrer le modèle ouvert retenu au service de structuration, sans coupler le 
 2. Retourner un objet validable contenant `category`, `summary`, `needs_review`, `provider` et `model_id`.
 3. Choisir parmi `dechets`, `caniveau_bouche`, `embouteillage` ou `indetermine`.
 4. Préserver le texte original et permettre la correction humaine avant ou après l’envoi.
-5. Traiter les réponses invalides, les délais d’attente et l’indisponibilité du modèle par une réponse de démonstration clairement identifiée.
-6. Garder les chemins, paramètres et identifiants de modèle configurables par environnement.
+5. Traiter les réponses invalides, les délais d’attente et l’indisponibilité du modèle par une réponse locale de secours clairement identifiée.
+6. Garder la clé, le fournisseur, le délai et l’identifiant du modèle configurables par environnement.
 
 ## Fichier principal et interface
 
@@ -20,7 +20,7 @@ backend/snart_api/services/structuring.py
 ```
 
 ```python
-structure_report(text: str, category_override: str | None = None) -> StructuredReport
+await structure_report(text: str, category_override: str | None = None) -> StructuredReport
 ```
 
 `StructuredReport` contient la catégorie, le résumé, le besoin de vérification et la provenance de structuration. Les formats sont définis dans `docs/01_VISION_ET_ARCHITECTURE.md`.
@@ -31,10 +31,13 @@ Le modèle structure le texte, propose une catégorie et résume la description.
 
 ## Configuration et données
 
-- Aucun poids de modèle n’est ajouté au dépôt.
-- Le README décrit l’identifiant, les prérequis matériels, la licence et la procédure de récupération du modèle retenu.
-- Les clés et chemins privés sont fournis par variables d’environnement, documentées dans `.env.example` sans valeurs secrètes.
-- La provenance du moteur (`demo_rules`, `local_model` ou autre identifiant explicite) est incluse dans la réponse.
+- Fournisseur : Google Gemini via le SDK officiel `google-genai`.
+- Modèle par défaut : `gemini-3.5-flash-lite`, remplaçable avec `SNART_MODEL_ID`.
+- Clé : `GEMINI_API_KEY`, côté serveur uniquement. `AI_MODEL` reste accepté comme alias de modèle pour la configuration locale existante.
+- `.env` est le fichier local recommandé ; `.env.txt` est aussi chargé si `.env` est absent.
+- Les interactions sont envoyées avec `store=false`. Seule la description textuelle est transmise, sans image, coordonnées ni heure.
+- Le fournisseur et le modèle réellement utilisés figurent dans la réponse. En cas d’absence de clé ou d’échec, `demo_rules` est indiqué.
+- La sortie Gemini est validée côté serveur ; la catégorie manuelle prévaut et le modèle ne décide jamais de la fiabilité ou de la véracité.
 
 ## Résultat de branche
 

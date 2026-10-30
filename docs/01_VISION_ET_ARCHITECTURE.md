@@ -47,7 +47,7 @@ Les captures d’écran sont sélectionnées explicitement par l’utilisateur. 
     "has_photo": true,
     "freshness": "recent"
   },
-  "structuring_mode": "demo_rules",
+  "structuring_mode": "gemini",
   "needs_review": false,
   "has_photo": true
 }
@@ -133,6 +133,7 @@ Une version de production requiert une stratégie de comptes, de limitation d’
 - Les métadonnées EXIF des photos peuvent contenir des coordonnées et doivent être supprimées avant une diffusion publique.
 - Les images ne sont accessibles que par l’API et passent par validation de type et de taille.
 - Les descriptions et médias doivent être considérés comme des contenus non vérifiés.
+- Seule la description textuelle est envoyée à l’API Google Gemini pour proposer une catégorie et un résumé ; les coordonnées, l’heure, l’image et les identifiants ne sont pas inclus dans cette requête. `store=false` désactive la conservation des interactions côté API. La clé Gemini reste dans la configuration du serveur.
 - Les fichiers `.env`, bases SQLite, caches et poids de modèle sont exclus du dépôt.
 
 ## 7. PWA et mode hors ligne
@@ -141,9 +142,15 @@ Le manifeste définit le nom, les icônes et l’affichage autonome. Le service 
 
 Les médias en attente sont conservés dans IndexedDB. Une soumission hors ligne est marquée comme telle. Pour les embouteillages, l’interface avertit qu’un signalement ancien doit être reconfirmé avant d’être affiché comme actuel.
 
-## 8. Limites de la version initiale
+## 8. Structuration Gemini
 
-- Le service de structuration présent sur `main` est un adaptateur de démonstration à base de règles ; aucun modèle externe n’est sélectionné.
+Le service utilise `google-genai` et le modèle `gemini-3.5-flash-lite` par défaut. La sortie JSON est limitée à la catégorie, au résumé et au marqueur `needs_review`, puis validée côté serveur. Le choix de catégorie effectué par l’utilisateur reste prioritaire. En l’absence de clé, en cas d’erreur, de délai dépassé ou de réponse invalide, le structurant local `demo_rules` prend le relais sans bloquer le signalement.
+
+Variables : `GEMINI_API_KEY`, `SNART_MODEL_PROVIDER`, `SNART_MODEL_ID` et `SNART_MODEL_TIMEOUT_SECONDS`. `AI_MODEL` est toléré comme alias de compatibilité. Les paramètres secrets sont locaux (`.env` ou `.env.txt`) et ne sont jamais transmis à la PWA.
+
+## 9. Limites de la version initiale
+
+- Gemini structure le texte ; la photo jointe n’est pas encore analysée par le modèle.
 - Le calcul de fiabilité est une heuristique communautaire à calibrer, sans données de vérité terrain.
 - Les tuiles cartographiques et le traitement serveur nécessitent une connexion.
 - Les identifiants pseudonymes du navigateur ne garantissent pas l’unicité réelle d’une personne.
