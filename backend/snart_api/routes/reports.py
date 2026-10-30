@@ -228,6 +228,11 @@ async def create_report(
     return _serialize(_load_report(int(report_id)))
 
 
+@router.get("/{report_id}", response_model=ReportRead)
+def get_report(report_id: int) -> ReportRead:
+    return _serialize(_load_report(report_id))
+
+
 def _save_vote(report_id: int, payload: ConfirmationRequest, vote: str | None = None) -> ReportRead:
     row = _load_report(report_id)
     if row["reporter_id"] == payload.user_id:

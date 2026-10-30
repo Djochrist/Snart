@@ -81,6 +81,10 @@ Requête `multipart/form-data` :
 
 `vote` accepte `still_present` ou `resolved`. La position exacte du confirmeur sert au calcul de distance et n’est pas renvoyée dans les données publiques.
 
+### Détail — `GET /api/reports/{id}`
+
+Renvoie une fiche `ReportRead` avec son indice de corroboration et les facteurs explicatifs. Un identifiant inexistant renvoie `404`.
+
 ## 4. Position et confirmations de proximité
 
 Le serveur compare la position ponctuelle de confirmation à celle du signalement. Une confirmation est qualifiée de « proche » uniquement si les deux positions sont disponibles, la précision GPS respecte le seuil configuré et la distance est dans le rayon configuré. Les valeurs initiales sont des paramètres de prototype à ajuster avec des observations locales.

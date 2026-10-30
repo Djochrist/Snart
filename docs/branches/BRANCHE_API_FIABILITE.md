@@ -9,10 +9,11 @@ Développer l’API Python, les schémas, le stockage, la validation des entrée
 1. `GET /api/health` indique l’état de disponibilité.
 2. `POST /api/reports` valide le texte, les catégories, les coordonnées, la précision et les images, puis enregistre le signalement.
 3. `GET /api/reports` renvoie les fiches et facteurs de fiabilité ; filtres de catégorie et statut disponibles.
-4. `POST /api/reports/{id}/confirm` vérifie la cohérence du vote et calcule la proximité côté serveur.
-5. `POST /api/reports/{id}/resolve` enregistre une observation de résolution.
-6. `GET /api/reports/{id}/photo` diffuse le média après validation.
-7. Les horodatages, le vieillissement et le score sont cohérents entre listes et fiches détaillées.
+4. `GET /api/reports/{id}` renvoie le détail et les facteurs explicatifs du score.
+5. `POST /api/reports/{id}/confirm` vérifie la cohérence du vote et calcule la proximité côté serveur.
+6. `POST /api/reports/{id}/resolve` enregistre une observation de résolution.
+7. `GET /api/reports/{id}/photo` diffuse le média après validation.
+8. Les horodatages, le vieillissement et le score sont cohérents entre listes et fiches détaillées.
 
 ## Fichiers principaux
 

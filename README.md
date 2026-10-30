@@ -60,6 +60,7 @@ Ouvrir ensuite `http://127.0.0.1:8000`. Le serveur fournit l’interface, les re
 |---|---|---|
 | `GET` | `/api/health` | État de l’API |
 | `GET` | `/api/reports` | Liste filtrable des signalements |
+| `GET` | `/api/reports/{id}` | Détail d’un signalement |
 | `POST` | `/api/reports` | Crée un signalement avec texte, position et média facultatif |
 | `POST` | `/api/reports/{id}/confirm` | Ajoute une confirmation communautaire |
 | `POST` | `/api/reports/{id}/resolve` | Propose la résolution d’un signalement |
