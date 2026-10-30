@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Sinart — Signalements citoyens",
+  "short_name": "Sinart",
+  "description": "Signalements de déchets, caniveaux bouchés et embouteillages à Lubumbashi.",
+  "lang": "fr-CD",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f7f3",
+  "theme_color": "#102a2b",
+  "icons": [
+    {
+      "src": "/icons/sinart.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

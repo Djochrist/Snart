@@ -1,0 +1,16 @@
+[project]
+name = "sinart"
+version = "0.1.0"
+description = "Plateforme citoyenne de signalement urbain intelligent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "pillow>=11,<13",
+    "python-multipart>=0.0.20,<1.0",
+    "python-dotenv>=1.0,<2.0",
+    "uvicorn[standard]>=0.34,<1.0",
+]
+
+[tool.uv]
+package = false

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#102a2b">
+    <meta name="description" content="Sinart organise les signalements citoyens de déchets, caniveaux bouchés et embouteillages.">
+    <link rel="icon" href="/icons/sinart.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/styles.css">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    >
+    <title>Sinart — Signalements citoyens</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Sinart, accueil">
+        <img src="/icons/sinart.svg" alt="" width="42" height="42">
+        <span><strong>Sinart</strong><small>Signalements citoyens</small></span>
+      </a>
+      <div class="topbar-meta">
+        <span id="networkState" class="network-state" role="status">Connexion…</span>
+        <a class="text-link" href="/docs" target="_blank" rel="noreferrer">API</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Lubumbashi · Observations de terrain</p>
+          <h1>Tu signales,<br><span>l’IA structure.</span></h1>
+          <p class="intro-copy">Déchets, caniveaux bouchés et embouteillages : une carte commune des problèmes observés et de leur évolution.</p>
+        </div>
+        <div class="intro-stat" aria-label="Les signalements sont corroborés par la communauté">
+          <span class="pulse-dot"></span>
+          <div><strong>Signalements suivis</strong><small>Fraîcheur et confirmations visibles</small></div>
+        </div>
+      </section>
+
+      <section class="filters" aria-label="Filtrer les signalements">
+        <button class="filter-chip is-active" type="button" data-filter="all">Tous</button>
+        <button class="filter-chip" type="button" data-filter="dechets"><span class="legend-dot waste"></span>Déchets</button>
+        <button class="filter-chip" type="button" data-filter="caniveau_bouche"><span class="legend-dot drain"></span>Caniveaux bouchés</button>
+        <button class="filter-chip" type="button" data-filter="embouteillage"><span class="legend-dot traffic"></span>Embouteillages</button>
+        <button class="refresh-button" id="refreshButton" type="button" title="Actualiser les signalements">Actualiser <span aria-hidden="true">↻</span></button>
+      </section>
+
+      <section class="workspace">
+        <aside class="report-panel panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Contribution</p><h2>Signaler un problème</h2></div>
+            <span class="step-mark">01</span>
+          </div>
+          <form id="reportForm">
+            <label for="description">Que se passe-t-il ?</label>
+            <textarea id="description" name="description" minlength="8" maxlength="2000" placeholder="Ex. : Un caniveau est bouché et l’eau déborde près du marché…" required></textarea>
+
+            <label for="category">Catégorie</label>
+            <select id="category" name="category">
+              <option value="auto">Proposition automatique</option>
+              <option value="dechets">Déchets</option>
+              <option value="caniveau_bouche">Caniveau bouché</option>
+              <option value="embouteillage">Embouteillage</option>
+            </select>
+
+            <div class="location-row">
+              <div class="location-copy">
+                <strong>Position du problème</strong>
+                <span id="locationLabel">Utiliser le GPS ou placer une épingle sur la carte.</span>
+              </div>
+              <button id="locateButton" class="icon-button" type="button" aria-label="Utiliser ma position">⌖</button>
+            </div>
+
+            <label class="upload-control" for="photo">
+              <span class="upload-icon" aria-hidden="true">＋</span>
+              <span><strong>Ajouter une photo ou une capture</strong><small>Image facultative · 8 Mo maximum</small></span>
+              <input id="photo" name="photo" type="file" accept="image/*" capture="environment">
+            </label>
+            <div id="photoPreview" class="photo-preview" hidden></div>
+
+            <button class="primary-button" id="submitButton" type="submit">Envoyer le signalement <span aria-hidden="true">↗</span></button>
+            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+          </form>
+          <p class="privacy-note">La position est demandée à l’action. Une confirmation proche augmente la corroboration, sans constituer une preuve absolue.</p>
+        </aside>
+
+        <section class="map-panel panel" aria-label="Carte et signalements">
+          <div id="pendingQueue" class="queue-banner" role="status" hidden></div>
+          <div class="map-heading">
+            <div><p class="eyebrow">Vue de terrain</p><h2>Carte des signalements</h2></div>
+            <span id="reportCount" class="count-pill">0 signalement</span>
+          </div>
+          <div id="map" class="map" role="application" aria-label="Carte interactive de Lubumbashi"></div>
+          <div class="list-heading"><h3>Activité récente</h3><span>Fiabilité communautaire estimée</span></div>
+          <div id="reportsList" class="reports-list" aria-live="polite"></div>
+          <div id="emptyState" class="empty-state" hidden>
+            <span aria-hidden="true">◎</span>
+            <strong>Aucun signalement dans cette vue</strong>
+            <p>Les signalements publiés apparaîtront ici et sur la carte.</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="method-note">
+        <span class="method-icon" aria-hidden="true">✳</span>
+        <p><strong>Un indice lisible.</strong> La fraîcheur, les confirmations distinctes, leur proximité GPS et la présence d’une image contribuent au score. Les données de localisation des personnes qui confirment ne sont pas affichées.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Sinart <span aria-hidden="true">·</span> Prototype communautaire</span>
+      <span>Les signalements décrivent des observations et restent sujets à confirmation.</span>
+    </footer>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+    ></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
