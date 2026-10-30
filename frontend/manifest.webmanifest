@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Sinart — Signalements citoyens",
-  "short_name": "Sinart",
+  "name": "Snart — Signalements citoyens",
+  "short_name": "Snart",
   "description": "Signalements de déchets, caniveaux bouchés et embouteillages à Lubumbashi.",
   "lang": "fr-CD",
   "start_url": "/",
@@ -12,7 +12,7 @@
   "theme_color": "#102a2b",
   "icons": [
     {
-      "src": "/icons/sinart.svg",
+      "src": "/icons/snart.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

@@ -2,7 +2,7 @@
 
 ## Périmètre
 
-Construire l’expérience mobile Sinart en HTML, CSS et JavaScript vanilla. La branche possède les écrans, la carte et les interactions navigateur ; elle consomme l’API définie dans `docs/01_VISION_ET_ARCHITECTURE.md`.
+Construire l’expérience mobile Snart en HTML, CSS et JavaScript vanilla. La branche possède les écrans, la carte et les interactions navigateur ; elle consomme l’API définie dans `docs/01_VISION_ET_ARCHITECTURE.md`.
 
 ## Capacités attendues
 
@@ -23,7 +23,7 @@ frontend/
   app.js
   manifest.webmanifest
   service-worker.js
-  icons/sinart.svg
+  icons/snart.svg
 ```
 
 ## Contrat d’intégration

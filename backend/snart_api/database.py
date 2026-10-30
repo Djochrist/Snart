@@ -1,4 +1,4 @@
-"""SQLite persistence for the first Sinart deployment profile."""
+"""SQLite persistence for the first Snart deployment profile."""
 
 from __future__ import annotations
 

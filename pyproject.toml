@@ -1,5 +1,5 @@
 [project]
-name = "sinart"
+name = "snart"
 version = "0.1.0"
 description = "Plateforme citoyenne de signalement urbain intelligent"
 readme = "README.md"

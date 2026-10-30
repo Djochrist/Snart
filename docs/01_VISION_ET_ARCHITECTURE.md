@@ -1,8 +1,8 @@
-# Sinart — vision fonctionnelle et architecture
+# Snart — vision fonctionnelle et architecture
 
 ## 1. Mission
 
-Sinart est une plateforme citoyenne de signalement et de corroboration des problèmes urbains. Elle organise les observations de terrain en informations horodatées, localisées, catégorisées et suivies dans le temps.
+Snart est une plateforme citoyenne de signalement et de corroboration des problèmes urbains. Elle organise les observations de terrain en informations horodatées, localisées, catégorisées et suivies dans le temps.
 
 ### Catégories initiales
 

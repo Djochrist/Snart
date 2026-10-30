@@ -1,4 +1,4 @@
-/* Sinart mobile-first PWA client; all user-generated text is rendered as text. */
+/* Snart mobile-first PWA client; all user-generated text is rendered as text. */
 const CATEGORY_INFO = {
   dechets: { label: 'Déchets', glyph: 'D', css: 'waste' },
   caniveau_bouche: { label: 'Caniveau bouché', glyph: 'C', css: 'drain' },
@@ -35,10 +35,10 @@ const elements = {
 };
 
 function userId() {
-  let id = localStorage.getItem('sinart-anonymous-id');
+  let id = localStorage.getItem('snart-anonymous-id');
   if (!id) {
     id = globalThis.crypto?.randomUUID?.() || `anon-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    localStorage.setItem('sinart-anonymous-id', id);
+    localStorage.setItem('snart-anonymous-id', id);
   }
   return id;
 }
@@ -98,7 +98,7 @@ function requestPosition() {
 function openQueueDatabase() {
   if (!('indexedDB' in window)) return Promise.reject(new Error('IndexedDB indisponible'));
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('sinart-offline-queue', 1);
+    const request = indexedDB.open('snart-offline-queue', 1);
     request.onupgradeneeded = () => {
       const database = request.result;
       if (!database.objectStoreNames.contains('reports')) {
@@ -143,7 +143,7 @@ function createFormData(item) {
     form.append('longitude', String(item.longitude));
     form.append('location_accuracy_m', String(item.location_accuracy_m ?? 150));
   }
-  if (item.photo) form.append('photo', item.photo, item.photo.name || 'sinart-image');
+  if (item.photo) form.append('photo', item.photo, item.photo.name || 'snart-image');
   return form;
 }
 

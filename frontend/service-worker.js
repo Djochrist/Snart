@@ -1,10 +1,10 @@
-const CACHE_NAME = 'sinart-shell-v1';
+const CACHE_NAME = 'snart-shell-v1';
 const APP_SHELL = [
   '/',
   '/styles.css',
   '/app.js',
   '/manifest.webmanifest',
-  '/icons/sinart.svg',
+  '/icons/snart.svg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
-      keys.filter((key) => key.startsWith('sinart-shell-') && key !== CACHE_NAME)
+      keys.filter((key) => key.startsWith('snart-shell-') && key !== CACHE_NAME)
         .map((key) => caches.delete(key)),
     )),
   );

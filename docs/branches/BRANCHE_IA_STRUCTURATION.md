@@ -16,7 +16,7 @@ Intégrer le modèle ouvert retenu au service de structuration, sans coupler le 
 ## Fichier principal et interface
 
 ```text
-backend/sinart_api/services/structuring.py
+backend/snart_api/services/structuring.py
 ```
 
 ```python

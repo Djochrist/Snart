@@ -1,4 +1,4 @@
-"""Runtime configuration for Sinart."""
+"""Runtime configuration for Snart."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ def _path_from_env(name: str, default: str) -> Path:
     return value if value.is_absolute() else PROJECT_ROOT / value
 
 
-DATABASE_PATH = _path_from_env("SINART_DATABASE", "data/sinart.sqlite3")
-NEARBY_RADIUS_M = float(os.getenv("SINART_NEARBY_RADIUS_M", "150"))
-MAX_GPS_ACCURACY_M = float(os.getenv("SINART_MAX_GPS_ACCURACY_M", "100"))
-MAX_PHOTO_BYTES = int(os.getenv("SINART_MAX_PHOTO_BYTES", str(8 * 1024 * 1024)))
+DATABASE_PATH = _path_from_env("SNART_DATABASE", "data/snart.sqlite3")
+NEARBY_RADIUS_M = float(os.getenv("SNART_NEARBY_RADIUS_M", "150"))
+MAX_GPS_ACCURACY_M = float(os.getenv("SNART_MAX_GPS_ACCURACY_M", "100"))
+MAX_PHOTO_BYTES = int(os.getenv("SNART_MAX_PHOTO_BYTES", str(8 * 1024 * 1024)))

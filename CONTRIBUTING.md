@@ -2,7 +2,7 @@
 
 ## Dépôt de référence
 
-`Djochrist/Sinart` est le dépôt central. Sa branche `main` contient l’état intégré et sert de base aux trois branches de travail. Les contributions externes sont proposées par pull request ; la fusion dans `main` est réservée aux mainteneurs du dépôt.
+`Djochrist/Snart` est le dépôt central. Sa branche `main` contient l’état intégré et sert de base aux trois branches de travail. Les contributions externes sont proposées par pull request ; la fusion dans `main` est réservée aux mainteneurs du dépôt.
 
 Pour qu’un fork existe par contributeur, le dépôt de référence peut être détenu par une organisation GitHub. Si le dépôt appartient au compte d’un membre, ce propriétaire travaille sur une branche du dépôt central ; les autres contributeurs peuvent le forker.
 
@@ -12,13 +12,13 @@ Pour qu’un fork existe par contributeur, le dépôt de référence peut être 
 2. Ajouter le dépôt central sous le nom `upstream`.
 3. Synchroniser `main` depuis `upstream/main` avant de commencer.
 4. Créer une branche correspondant à un seul périmètre.
-5. Publier une pull request vers `Djochrist/Sinart:main` en liant la tâche GitHub correspondante.
+5. Publier une pull request vers `Djochrist/Snart:main` en liant la tâche GitHub correspondante.
 6. Après fusion, synchroniser le fork avant le prochain travail.
 
 ```bash
-git clone https://github.com/<compte>/Sinart.git
-cd Sinart
-git remote add upstream https://github.com/Djochrist/Sinart.git
+git clone https://github.com/<compte>/Snart.git
+cd Snart
+git remote add upstream https://github.com/Djochrist/Snart.git
 git fetch upstream
 git switch main
 git merge upstream/main
@@ -38,15 +38,15 @@ git commit -m "feat: décrire le changement"
 git push -u origin feature/pwa-frontend
 ```
 
-La pull request cible ensuite `Djochrist/Sinart:main`. Le comparatif doit afficher le fork personnel et la branche de contribution comme source, et le dépôt central `main` comme destination.
+La pull request cible ensuite `Djochrist/Snart:main`. Le comparatif doit afficher le fork personnel et la branche de contribution comme source, et le dépôt central `main` comme destination.
 
 ## Trois branches de travail
 
 | Branche | Répertoire principal | Interface contractuelle |
 |---|---|---|
 | `feature/pwa-frontend` | `frontend/` | Routes `/api/reports` et schémas de `docs/01_VISION_ET_ARCHITECTURE.md` |
-| `feature/api-reliability` | `backend/sinart_api/` | Schémas Pydantic et routes publiées par l’API |
-| `feature/ai-structuring` | `backend/sinart_api/services/structuring.py` | Fonction `structure_report(text, category_override)` |
+| `feature/api-reliability` | `backend/snart_api/` | Schémas Pydantic et routes publiées par l’API |
+| `feature/ai-structuring` | `backend/snart_api/services/structuring.py` | Fonction `structure_report(text, category_override)` |
 
 Les branches sont des espaces de travail parallèles, pas trois produits indépendants. Les changements doivent respecter les contrats communs et revenir dans `main` par pull request.
 

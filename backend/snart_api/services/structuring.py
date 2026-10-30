@@ -12,8 +12,8 @@ import unicodedata
 
 from ..schemas import Category, StructuredReport
 
-PROVIDER = os.getenv("SINART_MODEL_PROVIDER", "demo_rules")
-MODEL_ID = os.getenv("SINART_MODEL_ID") or None
+PROVIDER = os.getenv("SNART_MODEL_PROVIDER", "demo_rules")
+MODEL_ID = os.getenv("SNART_MODEL_ID") or None
 
 KEYWORDS: dict[Category, tuple[str, ...]] = {
     "embouteillage": (

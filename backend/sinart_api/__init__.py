@@ -1,1 +1,0 @@
-"""Sinart API package."""

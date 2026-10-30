@@ -1,4 +1,4 @@
-"""Sinart FastAPI application and PWA static-file host."""
+"""Snart FastAPI application and PWA static-file host."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="Sinart API",
+    title="Snart API",
     description="Signalement citoyen et corroboration des observations urbaines.",
     version="0.1.0",
     lifespan=lifespan,
@@ -32,7 +32,7 @@ app.include_router(reports_router)
 
 @app.get("/api/health", tags=["system"])
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "sinart-api"}
+    return {"status": "ok", "service": "snart-api"}
 
 
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

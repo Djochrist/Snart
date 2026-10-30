@@ -17,7 +17,7 @@ Développer l’API Python, les schémas, le stockage, la validation des entrée
 ## Fichiers principaux
 
 ```text
-backend/sinart_api/
+backend/snart_api/
   main.py
   config.py
   database.py

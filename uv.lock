@@ -345,7 +345,7 @@ wheels = [
 ]
 
 [[package]]
-name = "sinart"
+name = "snart"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
