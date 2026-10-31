@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: snart-demo
+    runtime: python
+    plan: free
+    repo: https://github.com/Djochrist/Snart
+    branch: feature/ai-structuring
+    buildCommand: pip install uv && uv sync --frozen
+    startCommand: .venv/bin/python -m uvicorn snart_api.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.14"
+      - key: SNART_DATABASE
+        value: /tmp/snart-demo.sqlite3
+      - key: SNART_MODEL_PROVIDER
+        value: gemini
+      - key: SNART_MODEL_ID
+        value: gemma-4-26b-a4b-it
+      - key: SNART_MODEL_TIMEOUT_SECONDS
+        value: "15"
