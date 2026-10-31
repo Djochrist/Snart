@@ -82,11 +82,11 @@ test('les facteurs sont en langage clair, singulier et pluriel', () => {
       nearby_confirmations: 1, remote_confirmations: 2, resolution_confirmations: 0, freshness: 'récent',
     },
   });
-  assert.deepEqual(lines, ['1 confirmation proche', '2 confirmations à distance', 'Photo jointe', 'Ancienneté : récent']);
+  assert.deepEqual(lines, ['1 personne proche a confirmé', '2 personnes à distance ont confirmé', 'Photo jointe', 'Ancienneté : récent']);
 });
 
 test('l’indice n’est pas présenté comme une probabilité', () => {
-  assert.equal(indexLabel({ confidence_percent: 74 }), 'Indice de corroboration : 74/100');
+  assert.equal(indexLabel({ confidence_percent: 74 }), 'Fiabilité estimée : 74/100');
 });
 
 test('le mode demo_rules ne prétend pas à de l’IA', () => {

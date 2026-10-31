@@ -6,7 +6,9 @@ import {
 } from '../format.js';
 import { positionFailureMessage, requestPosition } from '../geo.js';
 import { reporterId } from '../identity.js';
-import { categoryTag, demoPill, retryBlock, statusPill } from './report-card.js';
+import {
+  categoryTag, demoPill, indexBubbles, retryBlock, statusPill,
+} from './report-card.js';
 
 function metaRow(list, term, value) {
   list.append(el('dt', '', term), el('dd', '', value));
@@ -37,17 +39,19 @@ function photoBlock(report) {
 function indexBlock(report) {
   const block = el('section', 'index-block');
   block.setAttribute('aria-labelledby', 'indexTitle');
-  const title = el('h2', '', 'Indice de corroboration');
+  const title = el('h2', '', 'Fiabilité estimée');
   title.id = 'indexTitle';
   const score = el('p', 'index-score');
   score.append(el('strong', '', String(report.confidence_percent)), el('span', '', '/100'));
+  const summary = el('div', 'index-summary');
+  summary.append(indexBubbles(report), score);
   const factors = el('ul', 'factor-list');
   factors.append(...factorLines(report).map((line) => el('li', '', line)));
   block.append(
     title,
-    score,
+    summary,
     factors,
-    el('p', 'detail-hint', 'Cet indice est une estimation communautaire, pas une certification officielle.'),
+    el('p', 'detail-hint', 'C’est une estimation communautaire, jamais une certitude ni une certification officielle.'),
   );
   return block;
 }

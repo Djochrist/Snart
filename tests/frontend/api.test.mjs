@@ -80,7 +80,7 @@ test('une annulation volontaire est signalée comme telle', async () => {
   await assert.rejects(pending, (error) => error.kind === 'aborted');
 });
 
-test('le multipart respecte les noms du contrat et n’envoie pas client_id', () => {
+test('le multipart respecte les noms du contrat et garde le client_id pour les renvois', () => {
   const form = reportFormData({
     client_id: 'local',
     description: 'Tas de déchets au marché',
@@ -92,7 +92,7 @@ test('le multipart respecte les noms du contrat et n’envoie pas client_id', ()
     location_accuracy_m: 12,
   });
   assert.deepEqual([...form.keys()].sort(), [
-    'category_override', 'description', 'latitude', 'location_accuracy_m', 'longitude', 'observed_at', 'reporter_id',
+    'category_override', 'client_id', 'description', 'latitude', 'location_accuracy_m', 'longitude', 'observed_at', 'reporter_id',
   ]);
 });
 

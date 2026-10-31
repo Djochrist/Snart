@@ -18,4 +18,4 @@ Données de démonstration synthétiques, à publier uniquement sur une base de 
 node tests/frontend/seed-demo.mjs http://127.0.0.1:8000
 ```
 
-Le GPS de ces essais est simulé par Chrome. La recette sur téléphone réel (GPS, appareil photo, réseau instable, installation) reste à faire.
+Le GPS de ces essais est simulé par Chrome. La recette sur téléphone réel se fait avec `RECETTE_TELEPHONE.md`.

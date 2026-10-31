@@ -1,18 +1,23 @@
 /* Éléments partagés par l'accueil, la liste, la carte et la fiche. */
 import { el, icon } from '../dom.js';
 import {
-  CATEGORIES, categoryInfo, formatRelative, isDemo, reportTime, statusLabel,
+  CATEGORIES, categoryInfo, formatRelative, indexLevel, isDemo, reportTime, statusLabel,
 } from '../format.js';
 
 export function categoryTag(category) {
   const info = categoryInfo(category);
   const tag = el('span', `category-tag ${info.css}`);
-  tag.append(icon(info.icon), el('span', '', info.label));
+  tag.append(icon(info.icon, 'bubble'), el('span', '', info.label));
   return tag;
 }
 
 export function statusPill(status) {
   return el('span', `status-pill is-${status}`, statusLabel(status));
+}
+
+/* Le score reste écrit en toutes lettres : les bulles n'en sont que le dessin. */
+export function indexBubbles(report) {
+  return icon(`indice-${indexLevel(report.confidence_percent)}`, 'indice');
 }
 
 export function demoPill() {
@@ -32,14 +37,17 @@ export function reportCard(report, headingTag = 'h3') {
   const meta = el('p', 'report-meta');
   const time = el('time', '', formatRelative(reportTime(report)));
   time.dateTime = reportTime(report);
-  meta.append(time, el('span', '', `Indice ${report.confidence_percent}/100`));
+  meta.append(el('span', '', `Fiabilité estimée ${report.confidence_percent}/100`), time);
   if (report.has_photo) {
     const photo = el('span', 'report-photo-flag');
     photo.append(icon('i-image'), el('span', '', 'Photo'));
     meta.append(photo);
   }
 
-  card.append(heading, title, meta);
+  const footer = el('div', 'report-footer');
+  footer.append(meta, indexBubbles(report));
+
+  card.append(heading, title, footer);
   if (report.needs_review) card.append(el('p', 'report-note', 'Catégorie à vérifier'));
   if (isDemo(report)) card.append(demoPill());
   return card;
@@ -59,7 +67,10 @@ export function filterBar(reports) {
     const chip = el('button', 'filter-chip');
     chip.type = 'button';
     chip.dataset.filter = code;
-    if (iconId) chip.append(icon(iconId));
+    if (iconId) {
+      chip.classList.add(categoryInfo(code).css);
+      chip.append(icon(iconId, 'bubble'));
+    }
     chip.append(el('span', '', label));
     chip.addEventListener('click', () => reports.setFilter(code));
     return chip;

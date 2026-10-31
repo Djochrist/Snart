@@ -193,7 +193,7 @@ export function createReportFormView({ reports, onQueueChanged }) {
       title,
       tags,
       el('p', 'result-summary', report.summary),
-      el('p', 'detail-hint', `Indice de corroboration de départ : ${report.confidence_percent}/100.`),
+      el('p', 'detail-hint', `Fiabilité estimée de départ : ${report.confidence_percent}/100.`),
       factors,
       actions,
     );
@@ -215,14 +215,14 @@ export function createReportFormView({ reports, onQueueChanged }) {
     resetForm();
     setMessage('');
     await onQueueChanged();
-    notify(`${reason} Ton signalement est gardé sur ce téléphone, il n’est pas encore publié.${trafficNote}`, { duration: 10000 });
+    notify(`${reason} Il n’est pas encore publié.${trafficNote}`, { duration: 10000 });
     location.hash = '#/attente';
   }
 
   async function publish(item) {
     try {
       if (!navigator.onLine) {
-        await keepForLater(item, 'Tu es hors ligne.');
+        await keepForLater(item, 'Pas de réseau. Ton signalement partira dès qu’il revient.');
         return;
       }
       const report = await createReport(item);
@@ -234,7 +234,7 @@ export function createReportFormView({ reports, onQueueChanged }) {
       resetForm();
       showResult(report);
     } catch (error) {
-      if (isRetryable(error)) await keepForLater(item, 'Le serveur est injoignable pour le moment.');
+      if (isRetryable(error)) await keepForLater(item, 'Le serveur ne répond pas. Ton signalement partira dès qu’il revient.');
       else setMessage(error.message, true);
     }
   }

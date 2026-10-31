@@ -2,7 +2,7 @@
  * Cache du shell : l'interface s'ouvre sans réseau, y compris sur une connexion instable.
  * À chaque mise en ligne, change CACHE_VERSION : c'est ce qui déclenche la mise à jour.
  */
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_PREFIX = 'snart-shell-';
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;
 const APP_SHELL = [
@@ -19,6 +19,10 @@ const APP_SHELL = [
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/maskable-512.png',
+  'images/trame-nuit.svg',
+  'images/dechets.webp',
+  'images/caniveau.webp',
+  'images/embouteillage.webp',
   'js/api.js',
   'js/dom.js',
   'js/format.js',

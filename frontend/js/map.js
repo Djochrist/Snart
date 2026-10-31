@@ -64,7 +64,7 @@ function markerElement(group) {
   const [first] = group;
   const info = categoryInfo(first.category);
   const dot = el('span', `marker-dot ${info.css} is-${first.status}`);
-  dot.append(icon(info.icon));
+  dot.append(icon(info.icon, 'bubble'));
   if (group.length > 1) dot.append(el('span', 'marker-badge', String(group.length)));
   else if (first.status === 'resolved') dot.append(el('span', 'marker-badge', '✓'));
   else if (first.status === 'stale') dot.append(el('span', 'marker-badge', '!'));
@@ -123,8 +123,9 @@ export function createReportsMap(container, { onTilesFailed }) {
             className: 'report-marker',
             html: markerElement(group),
             iconSize: [38, 38],
-            iconAnchor: [19, 19],
-            popupAnchor: [0, -18],
+            // La pointe de la bulle, en bas à droite, tombe sur le lieu exact.
+            iconAnchor: [38, 38],
+            popupAnchor: [-19, -38],
           }),
         });
         marker.bindPopup(popupContent(group), { maxWidth: 280, maxHeight: 300 });
@@ -149,7 +150,7 @@ export function createReportsMap(container, { onTilesFailed }) {
 function pinIcon() {
   const dot = el('span', 'marker-pin');
   dot.append(icon('i-pin'));
-  return L.divIcon({ className: 'report-marker', html: dot, iconSize: [42, 42], iconAnchor: [21, 40] });
+  return L.divIcon({ className: 'report-marker', html: dot, iconSize: [42, 42], iconAnchor: [39, 39] });
 }
 
 /* Épingle du formulaire : elle situe le problème, pas la personne. */

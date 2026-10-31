@@ -24,6 +24,7 @@ from playwright.sync_api import Browser, Page, expect, sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 PORT = 8011
 BASE = f"http://127.0.0.1:{PORT}"
+STATIC_PORT = 8012
 NEAR = {"latitude": -11.6642, "longitude": 27.4794, "accuracy": 20}
 PNG = (ROOT / "frontend" / "icons" / "icon-192.png").read_bytes()
 AXE_URL = "https://cdn.jsdelivr.net/npm/axe-core@4.10.2/axe.min.js"
@@ -460,6 +461,88 @@ def test_queue_failures(browser: Browser) -> None:
         check("il quitte la file une fois publié", queue_size(page) == 0)
 
 
+@scenario("Réponse perdue : pas de doublon")
+def test_lost_response(browser: Browser) -> None:
+    with app(browser) as page:
+        wait_for_worker(page)
+        text = "Un tas de dechets dont la reponse se perd"
+        count_before = len(api("/api/reports?limit=500"))
+
+        def lose_response(route):
+            if route.request.method != "POST":
+                return route.continue_()
+            route.fetch()
+            return route.abort("connectionreset")
+
+        page.route("**/api/reports", lose_response)
+        fill_report(page, text)
+        page.click("#submitButton")
+        expect(page.locator(".pending-card")).to_have_count(1)
+        check("le serveur a bien reçu le premier envoi", len(api("/api/reports?limit=500")) == count_before + 1)
+        check("le navigateur le croit perdu et le garde", queue_size(page) == 1)
+        page.unroute("**/api/reports")
+        with page.expect_response(lambda r: r.url.endswith("/api/reports") and r.request.method == "POST") as reply:
+            page.click("text=Envoyer maintenant")
+        check("le renvoi reçoit le signalement existant", reply.value.status == 200, reply.value.status)
+        expect(page.locator("#queueBanner")).to_be_hidden()
+        check("aucun doublon sur le serveur", len(api("/api/reports?limit=500")) == count_before + 1)
+
+
+@scenario("Déploiement : sous-répertoire, API séparée, mise à jour")
+def test_deployment(browser: Browser, site: Path) -> None:
+    worker = site / "snart" / "service-worker.js"
+    base = f"http://127.0.0.1:{STATIC_PORT}/snart"
+    with app(browser, base=base) as page:
+        missing: list[str] = []
+        page.on("response", lambda r: missing.append(r.url) if r.status >= 400 else None)
+        page.goto(f"{base}/#/liste")
+        page.reload()
+        expect(page.locator("#listResults .report-card").first).to_be_visible()
+        check("aucune ressource introuvable sous /snart/", not missing, missing)
+        check("l’API séparée répond à travers CORS", page.locator("#networkState").inner_text() == "En ligne")
+        wait_for_worker(page)
+        scope = page.evaluate("navigator.serviceWorker.ready.then((r) => r.scope)")
+        check("le service worker reste dans le sous-répertoire", scope == f"{base}/", scope)
+
+        page.goto(f"{base}/#/signaler")
+        page.fill("#description", "Un tas de dechets envoye depuis cPanel")
+        page.set_input_files("#photoFile", {"name": "tas.png", "mimeType": "image/png", "buffer": PNG})
+        with page.expect_response(created) as reply:
+            page.click("#submitButton")
+        report = reply.value.json()
+        check("création multipart entre origines", reply.value.status == 201, reply.value.status)
+        page.goto(f"{base}/#/signalement/{report['id']}")
+        page.click("text=Afficher la photo")
+        expect(page.locator(".detail-photo img")).to_be_visible()
+        check("la photo vient de l’API distante", page.get_attribute(".detail-photo img", "src").startswith(BASE))
+
+        target = next(item for item in api("/api/reports") if item["id"] != report["id"])
+        page.goto(f"{base}/#/signalement/{target['id']}")
+        with page.expect_response("**/confirm") as vote:
+            page.click("text=Toujours présent")
+        check("le vote JSON passe le contrôle CORS", vote.value.status == 200, vote.value.status)
+
+        old_cache = page.evaluate("caches.keys()")
+        worker.write_text(worker.read_text(encoding="utf8").replace("CACHE_VERSION = 'v", "CACHE_VERSION = 'test-v"), encoding="utf8")
+        page.evaluate("navigator.serviceWorker.getRegistration().then((r) => r.update())")
+        expect(page.locator("#updateBanner")).to_be_visible(timeout=15000)
+        check("la mise à jour est proposée, pas imposée", old_cache == page.evaluate("caches.keys()") or len(page.evaluate("caches.keys()")) == 2)
+        with page.expect_navigation():
+            page.click("#updateBanner button")
+        page.wait_for_function("caches.keys().then((k) => k.length === 1 && k[0].includes('test-v'))")
+        check("l’ancien cache est supprimé après la mise à jour", True)
+
+        page.goto(f"{base}/#/")
+        page.context.set_offline(True)
+        page.reload()
+        expect(page.locator("#networkState")).to_have_text("Hors ligne")
+        check("la nouvelle version s’ouvre hors ligne", page.locator("h1:visible").first.is_visible())
+
+    request = urllib.request.Request(f"{BASE}/api/health", headers={"Origin": "https://inconnu.example"})
+    with urllib.request.urlopen(request) as response:
+        check("une origine inconnue n’est pas autorisée", response.headers.get("access-control-allow-origin") is None)
+
+
 @scenario("Largeurs, zoom et accessibilité (axe-core)")
 def test_layout_and_a11y(browser: Browser) -> None:
     for width in WIDTHS:
@@ -521,7 +604,16 @@ def main() -> int:
     environment = os.environ | {
         "SNART_DATABASE": str(data / "e2e.sqlite3"),
         "SNART_MODEL_PROVIDER": "demo_rules",
+        "SNART_CORS_ORIGINS": f"http://127.0.0.1:{STATIC_PORT}",
     }
+    site = data / "site"
+    shutil.copytree(ROOT / "frontend", site / "snart")
+    config = site / "snart" / "config.js"
+    config.write_text(config.read_text(encoding="utf8").replace("apiBaseUrl: ''", f"apiBaseUrl: '{BASE}'"), encoding="utf8")
+    static_server = subprocess.Popen(
+        [sys.executable, "-m", "http.server", str(STATIC_PORT), "--bind", "127.0.0.1", "--directory", str(site)],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
     python = ROOT / ".venv" / "Scripts" / "python.exe"
     server = subprocess.Popen(
         [str(python), "-m", "uvicorn", "snart_api.main:app", "--app-dir", "backend", "--host", "127.0.0.1", "--port", str(PORT), "--log-level", "warning"],
@@ -548,12 +640,15 @@ def main() -> int:
             test_xss(browser)
             test_offline(browser)
             test_queue_failures(browser)
+            test_lost_response(browser)
+            test_deployment(browser, site)
             test_layout_and_a11y(browser)
             try:
                 browser.close()
             except Exception:
                 pass
     finally:
+        static_server.terminate()
         server.terminate()
         server.wait(timeout=10)
         shutil.rmtree(data, ignore_errors=True)

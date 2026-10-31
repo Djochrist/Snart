@@ -11,7 +11,7 @@ function categoryCounts(items) {
     const total = items.filter((report) => report.category === code).length;
     if (code === 'indetermine' && total === 0) continue;
     const row = el('li', `category-count ${info.css}`);
-    row.append(icon(info.icon), el('span', 'category-count-label', info.label), el('strong', '', String(total)));
+    row.append(icon(info.icon, 'bubble'), el('span', 'category-count-label', info.label), el('strong', '', String(total)));
     list.append(row);
   }
   return list;

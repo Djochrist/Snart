@@ -10,7 +10,7 @@ export class ApiError extends Error {
   }
 }
 
-const NETWORK_MESSAGE = 'Connexion impossible. Vérifie ton réseau puis réessaie.';
+const NETWORK_MESSAGE = 'Pas de réseau. Réessaie dès qu’il revient.';
 const TIMEOUT_MESSAGE = 'Le serveur met trop de temps à répondre. Réessaie dans un instant.';
 
 const STATUS_ERRORS = {
@@ -105,12 +105,13 @@ export function photoUrl(id) {
   return `${CONFIG.apiBaseUrl}/api/reports/${encodeURIComponent(id)}/photo`;
 }
 
-/* `item` vient du formulaire ou de la file hors ligne : `client_id` reste local et n'est pas envoyé. */
+/* `item` vient du formulaire ou de la file hors ligne. `client_id` évite un doublon si une réponse se perd. */
 export function reportFormData(item) {
   const form = new FormData();
   form.append('description', item.description);
   form.append('reporter_id', item.reporter_id);
   form.append('category_override', item.category_override || 'auto');
+  if (item.client_id) form.append('client_id', item.client_id);
   if (item.observed_at) form.append('observed_at', item.observed_at);
   if (Number.isFinite(item.latitude) && Number.isFinite(item.longitude)) {
     form.append('latitude', String(item.latitude));

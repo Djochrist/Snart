@@ -1,9 +1,9 @@
 /* Libellés français des codes de l'API. Aucun calcul métier : tout vient du backend. */
 export const CATEGORIES = {
-  dechets: { label: 'Déchets', icon: 'i-dechets', css: 'waste' },
-  caniveau_bouche: { label: 'Caniveau bouché', icon: 'i-caniveau', css: 'drain' },
-  embouteillage: { label: 'Embouteillage', icon: 'i-trafic', css: 'traffic' },
-  indetermine: { label: 'À préciser', icon: 'i-inconnu', css: 'unknown' },
+  dechets: { label: 'Déchets', icon: 'm-dechets', css: 'waste' },
+  caniveau_bouche: { label: 'Caniveau bouché', icon: 'm-caniveau', css: 'drain' },
+  embouteillage: { label: 'Embouteillage', icon: 'm-trafic', css: 'traffic' },
+  indetermine: { label: 'À préciser', icon: 'm-inconnu', css: 'unknown' },
 };
 
 const STATUSES = {
@@ -50,7 +50,13 @@ export function reportTime(report) {
 }
 
 export function indexLabel(report) {
-  return `Indice de corroboration : ${report.confidence_percent}/100`;
+  return `Fiabilité estimée : ${report.confidence_percent}/100`;
+}
+
+/* Bulles pleines du guide d'identité : seuils proposés, simple dessin du score reçu de l'API. */
+export function indexLevel(percent) {
+  if (percent >= 67) return 3;
+  return percent >= 40 ? 2 : 1;
 }
 
 export function factorLines(report) {
@@ -59,8 +65,8 @@ export function factorLines(report) {
   const remote = factors.remote_confirmations ?? 0;
   const resolutions = factors.resolution_confirmations ?? 0;
   const lines = [
-    plural(nearby, 'confirmation proche', 'confirmations proches'),
-    plural(remote, 'confirmation à distance', 'confirmations à distance'),
+    nearby === 1 ? '1 personne proche a confirmé' : `${nearby} personnes proches ont confirmé`,
+    remote === 1 ? '1 personne à distance a confirmé' : `${remote} personnes à distance ont confirmé`,
   ];
   if (resolutions > 0) lines.push(plural(resolutions, 'proposition de résolution', 'propositions de résolution'));
   lines.push(report.has_photo ? 'Photo jointe' : 'Pas de photo');
@@ -73,7 +79,7 @@ export function structuringNote(report) {
     return 'Résumé et catégorie obtenus par des règles simples, sans modèle d’IA.';
   }
   if (report.structuring_mode === 'gemini') {
-    return 'Résumé et catégorie proposés par l’IA Gemini à partir de la description. C’est une proposition, pas une vérification.';
+    return 'Résumé et catégorie proposés par l’IA Gemini à partir de la description. C’est une proposition.';
   }
   return 'Résumé et catégorie proposés automatiquement.';
 }
