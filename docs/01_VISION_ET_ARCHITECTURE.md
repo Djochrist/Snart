@@ -65,6 +65,7 @@ Requête `multipart/form-data` :
 | `location_accuracy_m` | nombre | non | précision communiquée par le navigateur |
 | `observed_at` | ISO-8601 | non | heure déclarée par le client ; indicatif |
 | `reporter_id` | identifiant pseudonyme | oui | déduplication du dépôt dans le prototype |
+| `client_id` | identifiant généré par le client | non | 8–80 caractères ; un renvoi avec le même `reporter_id` et le même `client_id` renvoie le signalement existant en `200` au lieu de `201` |
 | `photo` | image | non | formats image ; limite de taille côté API |
 
 ### Confirmation — `POST /api/reports/{id}/confirm`

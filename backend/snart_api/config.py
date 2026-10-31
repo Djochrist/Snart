@@ -23,3 +23,9 @@ DATABASE_PATH = _path_from_env("SNART_DATABASE", "data/snart.sqlite3")
 NEARBY_RADIUS_M = float(os.getenv("SNART_NEARBY_RADIUS_M", "150"))
 MAX_GPS_ACCURACY_M = float(os.getenv("SNART_MAX_GPS_ACCURACY_M", "100"))
 MAX_PHOTO_BYTES = int(os.getenv("SNART_MAX_PHOTO_BYTES", str(8 * 1024 * 1024)))
+# Exact frontend origins, comma-separated. A wildcard is deliberately ignored.
+CORS_ORIGINS = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv("SNART_CORS_ORIGINS", "").split(",")
+    if origin.strip() and origin.strip() != "*"
+]

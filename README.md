@@ -50,7 +50,7 @@ uv sync
 uv run uvicorn snart_api.main:app --app-dir backend --reload
 ```
 
-Le service accepte également le fichier local `.env.txt` déjà utilisé dans certains environnements. `SNART_MODEL_ID` choisit le modèle ; `AI_MODEL` reste accepté comme alias pour la configuration locale existante. Si aucune clé valide n’est disponible, les signalements restent utilisables avec le structurant local de secours.
+Si le frontend est hébergé sur une autre origine que l’API, `SNART_CORS_ORIGINS` liste ses origines exactes, séparées par des virgules. Le service accepte également le fichier local `.env.txt` déjà utilisé dans certains environnements. `SNART_MODEL_ID` choisit le modèle ; `AI_MODEL` reste accepté comme alias pour la configuration locale existante. Si aucune clé valide n’est disponible, les signalements restent utilisables avec le structurant local de secours.
 
 Ouvrir ensuite `http://127.0.0.1:8000`. Le serveur fournit l’interface, les ressources PWA et l’API. La base SQLite de développement est créée localement dans `data/` et n’est pas versionnée.
 

@@ -36,7 +36,8 @@ def init_database() -> None:
                 photo_mime TEXT,
                 structuring_mode TEXT NOT NULL,
                 model_id TEXT,
-                needs_review INTEGER NOT NULL DEFAULT 0
+                needs_review INTEGER NOT NULL DEFAULT 0,
+                client_id TEXT
             );
 
             CREATE TABLE IF NOT EXISTS confirmations (
@@ -55,6 +56,15 @@ def init_database() -> None:
                 ON reports(category);
             CREATE INDEX IF NOT EXISTS idx_confirmations_report
                 ON confirmations(report_id);
+            """
+        )
+        columns = {row["name"] for row in connection.execute("PRAGMA table_info(reports)")}
+        if "client_id" not in columns:
+            connection.execute("ALTER TABLE reports ADD COLUMN client_id TEXT")
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_reports_client_id
+                ON reports(reporter_id, client_id) WHERE client_id IS NOT NULL
             """
         )
         connection.commit()

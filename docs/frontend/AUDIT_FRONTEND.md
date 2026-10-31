@@ -95,8 +95,8 @@ Page unique : intro → filtres → formulaire + carte + liste
 | # | Écart | Décision appliquée en attendant |
 |---|---|---|
 | D1 | `BRANCHE_PWA_FRONTEND.md` demande un aperçu du résumé et de la catégorie renvoyés par l'API **avant** envoi. L'API n'a pas de route d'aperçu : `POST /api/reports` publie directement. | Le cahier §13 prime : le résultat est affiché après publication. |
-| D2 | Aucune configuration CORS dans le backend (vérifié : pas d'en-tête `Access-Control-Allow-Origin`). Un frontend sur cPanel et une API ailleurs ne peuvent pas communiquer. | Non modifié, le backend est hors périmètre. À traiter sur `feature/api-reliability`. |
-| D3 | La file hors ligne ne peut pas garantir l'absence de doublon si la réponse du serveur se perd : l'API n'accepte pas de `client_id`. | Limite documentée. Le `client_id` reste local et n'est jamais envoyé. |
+| D2 | Aucune configuration CORS dans le backend (vérifié : pas d'en-tête `Access-Control-Allow-Origin`). Un frontend sur cPanel et une API ailleurs ne peuvent pas communiquer. | Traité ensuite : `SNART_CORS_ORIGINS` liste les origines exactes autorisées. |
+| D3 | La file hors ligne ne peut pas garantir l'absence de doublon si la réponse du serveur se perd : l'API n'accepte pas de `client_id`. | Traité ensuite : l'API accepte un `client_id` facultatif et idempotent, envoyé par le frontend. |
 
 ### Sans conséquence pour l'utilisateur
 
