@@ -5,9 +5,8 @@ from __future__ import annotations
 import math
 import sqlite3
 import warnings
-from datetime import timedelta
 from contextlib import closing
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from typing import Annotated
 
@@ -17,12 +16,35 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 from ..config import MAX_GPS_ACCURACY_M, MAX_PHOTO_BYTES, NEARBY_RADIUS_M
 from ..database import connect
-from ..schemas import Category, ConfirmationRequest, ReportRead, StructuredReport
+from ..schemas import Category, ConfirmationRequest, ReportRead, ReportStatus, StructuredReport
 from ..services.reliability import confidence_score, parse_datetime
 from ..services.structuring import structure_report
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 VALID_CATEGORIES = {"dechets", "caniveau_bouche", "embouteillage", "indetermine"}
+
+# Lists and details need only the presence of a photo, never the image BLOB itself.
+# Aggregate votes in the same query instead of opening one connection per report.
+REPORT_QUERY = """
+    SELECT r.id, r.category, r.summary, r.description, r.latitude, r.longitude,
+           r.location_accuracy_m, r.reporter_id, r.created_at, r.observed_at,
+           r.structuring_mode, r.model_id, r.needs_review,
+           (r.photo IS NOT NULL) AS has_photo,
+           COALESCE(c.nearby, 0) AS nearby, COALESCE(c.remote, 0) AS remote,
+           COALESCE(c.resolved_nearby, 0) AS resolved_nearby,
+           COALESCE(c.resolved_remote, 0) AS resolved_remote, c.last_confirmed_at
+    FROM reports AS r
+    LEFT JOIN (
+        SELECT report_id,
+            SUM(vote = 'still_present' AND nearby = 1) AS nearby,
+            SUM(vote = 'still_present' AND nearby = 0) AS remote,
+            SUM(vote = 'resolved' AND nearby = 1) AS resolved_nearby,
+            SUM(vote = 'resolved' AND nearby = 0) AS resolved_remote,
+            MAX(CASE WHEN vote = 'still_present' AND nearby = 1 THEN created_at END)
+                AS last_confirmed_at
+        FROM confirmations GROUP BY report_id
+    ) AS c ON c.report_id = r.id
+"""
 
 
 def _now_iso() -> str:
@@ -40,37 +62,24 @@ def _distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 def _load_report(report_id: int) -> sqlite3.Row:
     with closing(connect()) as connection:
-        row = connection.execute("SELECT * FROM reports WHERE id = ?", (report_id,)).fetchone()
+        row = connection.execute(REPORT_QUERY + " WHERE r.id = ?", (report_id,)).fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="Signalement introuvable")
     return row
 
 
-def _serialize(row: sqlite3.Row) -> ReportRead:
-    with closing(connect()) as connection:
-        counts = connection.execute(
-            """
-            SELECT
-                SUM(CASE WHEN vote = 'still_present' AND nearby = 1 THEN 1 ELSE 0 END) AS nearby,
-                SUM(CASE WHEN vote = 'still_present' AND nearby = 0 THEN 1 ELSE 0 END) AS remote,
-                SUM(CASE WHEN vote = 'resolved' AND nearby = 1 THEN 1 ELSE 0 END) AS resolved_nearby,
-                SUM(CASE WHEN vote = 'resolved' AND nearby = 0 THEN 1 ELSE 0 END) AS resolved_remote,
-                MAX(CASE WHEN vote = 'still_present' THEN created_at END) AS last_confirmed_at
-            FROM confirmations WHERE report_id = ?
-            """,
-            (row["id"],),
-        ).fetchone()
-
-    nearby = int(counts["nearby"] or 0)
-    remote = int(counts["remote"] or 0)
-    resolved_nearby = int(counts["resolved_nearby"] or 0)
-    resolved_remote = int(counts["resolved_remote"] or 0)
-    last_confirmed_at = counts["last_confirmed_at"]
+def _serialize(row: sqlite3.Row, now: datetime | None = None) -> ReportRead:
+    now = now or datetime.now(timezone.utc)
+    nearby = int(row["nearby"])
+    remote = int(row["remote"])
+    resolved_nearby = int(row["resolved_nearby"])
+    resolved_remote = int(row["resolved_remote"])
+    last_confirmed_at = row["last_confirmed_at"]
     effective_observed_at = row["observed_at"]
     if last_confirmed_at and parse_datetime(last_confirmed_at) > parse_datetime(effective_observed_at):
         effective_observed_at = last_confirmed_at
     score, freshness, stale = confidence_score(
-        row["category"], effective_observed_at, nearby, remote, bool(row["photo"])
+        row["category"], effective_observed_at, nearby, remote, bool(row["has_photo"]), now
     )
     if resolved_nearby >= 2:
         status = "resolved"
@@ -96,13 +105,13 @@ def _serialize(row: sqlite3.Row) -> ReportRead:
             "nearby_confirmations": nearby,
             "remote_confirmations": remote,
             "resolution_confirmations": resolved_nearby + resolved_remote,
-            "has_photo": bool(row["photo"]),
+            "has_photo": bool(row["has_photo"]),
             "freshness": freshness,
         },
         structuring_mode=row["structuring_mode"],
         model_id=row["model_id"],
         needs_review=bool(row["needs_review"]),
-        has_photo=bool(row["photo"]),
+        has_photo=bool(row["has_photo"]),
     )
 
 
@@ -150,18 +159,28 @@ async def _read_photo(upload: UploadFile | None) -> tuple[bytes | None, str | No
 @router.get("", response_model=list[ReportRead])
 def list_reports(
     category: Annotated[Category | None, Query()] = None,
+    status: Annotated[ReportStatus | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=500)] = 200,
 ) -> list[ReportRead]:
-    sql = "SELECT * FROM reports"
+    sql = REPORT_QUERY
     params: list[object] = []
     if category:
-        sql += " WHERE category = ?"
+        sql += " WHERE r.category = ?"
         params.append(category)
-    sql += " ORDER BY created_at DESC LIMIT ?"
-    params.append(limit)
+    sql += " ORDER BY r.created_at DESC, r.id DESC"
+    if status is None:
+        sql += " LIMIT ?"
+        params.append(limit)
+    now = datetime.now(timezone.utc)
+    reports = []
     with closing(connect()) as connection:
-        rows = connection.execute(sql, params).fetchall()
-    return [_serialize(row) for row in rows]
+        for row in connection.execute(sql, params):
+            report = _serialize(row, now)
+            if status is None or report.status == status:
+                reports.append(report)
+                if len(reports) == limit:
+                    break
+    return reports
 
 
 @router.post("", response_model=ReportRead, status_code=201)
@@ -176,8 +195,11 @@ async def create_report(
     photo: Annotated[UploadFile | None, File()] = None,
 ) -> ReportRead:
     description = description.strip()
+    reporter_id = reporter_id.strip()
     if len(description) < 8:
         raise HTTPException(status_code=422, detail="La description doit contenir au moins 8 caractères")
+    if len(reporter_id) < 8:
+        raise HTTPException(status_code=422, detail="Identifiant auteur invalide")
     if (latitude is None) != (longitude is None):
         raise HTTPException(status_code=422, detail="Latitude et longitude doivent être fournies ensemble")
     if category_override != "auto" and category_override not in VALID_CATEGORIES - {"indetermine"}:
@@ -185,7 +207,7 @@ async def create_report(
 
     try:
         observed = parse_datetime(observed_at) if observed_at else datetime.now(timezone.utc)
-    except ValueError as error:
+    except (ValueError, OverflowError) as error:
         raise HTTPException(status_code=422, detail="Heure d’observation invalide") from error
     now = datetime.now(timezone.utc)
     if observed > now:
@@ -194,8 +216,8 @@ async def create_report(
     if (now - observed).total_seconds() > 30 * 24 * 3600:
         observed = now - timedelta(days=30)
 
-    structured: StructuredReport = await structure_report(description, category_override)
     photo_bytes, photo_mime = await _read_photo(photo)
+    structured: StructuredReport = await structure_report(description, category_override)
     created = _now_iso()
     with closing(connect()) as connection:
         cursor = connection.execute(
@@ -278,7 +300,10 @@ def propose_resolution(report_id: int, payload: ConfirmationRequest) -> ReportRe
 
 @router.get("/{report_id}/photo")
 def get_photo(report_id: int) -> Response:
-    row = _load_report(report_id)
+    with closing(connect()) as connection:
+        row = connection.execute("SELECT photo, photo_mime FROM reports WHERE id = ?", (report_id,)).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Signalement introuvable")
     if not row["photo"] or not row["photo_mime"]:
         raise HTTPException(status_code=404, detail="Aucune image pour ce signalement")
     return Response(
