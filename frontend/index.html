@@ -4,121 +4,241 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#102a2b">
-    <meta name="description" content="Snart organise les signalements citoyens de déchets, caniveaux bouchés et embouteillages.">
-    <link rel="icon" href="/icons/snart.svg" type="image/svg+xml">
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="stylesheet" href="/styles.css">
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      crossorigin=""
-    >
+    <meta name="description" content="Snart organise les signalements citoyens de déchets, caniveaux bouchés et embouteillages à Lubumbashi.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Snart">
     <title>Snart — Signalements citoyens</title>
+    <link rel="icon" href="icons/favicon.ico" sizes="any">
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&amp;family=Manrope:wght@700;800&amp;display=swap">
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="app.js"></script>
   </head>
-  <body>
+  <body data-route="home">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-dechets" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M25.69 34H70.31Q72.38 34 73.85 35.46Q75.31 36.93 75.31 39Q75.31 39.32 75.27 39.64L69.56 83.64Q69 88 64.61 88H31.39Q27 88 26.44 83.64L20.73 39.64Q20.47 37.59 21.73 35.95Q22.99 34.31 25.05 34.04Q25.37 34 25.69 34ZM13 25V22Q13 18 17 18H36V12Q36 8 40 8H56Q60 8 60 12V18H79Q83 18 83 22V25Q83 29 79 29H17Q13 29 13 25ZM33 74.5Q33 78 36.5 78H37Q40.5 78 40.5 74.5V47.5Q40.5 44 37 44H36.5Q33 44 33 47.5ZM44.25 74.5Q44.25 78 47.75 78H48.25Q51.75 78 51.75 74.5V47.5Q51.75 44 48.25 44H47.75Q44.25 44 44.25 47.5ZM55.5 74.5Q55.5 78 59 78H59.5Q63 78 63 74.5V47.5Q63 44 59.5 44H59Q55.5 44 55.5 47.5Z"/></symbol>
+      <symbol id="i-caniveau" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M14 77V53Q14 50.1 16.05 48.05Q18.1 46 21 46H75Q77.9 46 79.95 48.05Q82 50.1 82 53V77Q82 79.9 79.95 81.95Q77.9 84 75 84H21Q18.1 84 16.05 81.95Q14 79.9 14 77ZM10 25Q20.5 11 31 11Q41.5 11 52 25Q59.5 35 65 35Q70.5 35 78 25Q79.24 23.34 81.29 23.05Q83.34 22.76 85 24Q86.66 25.24 86.95 27.29Q87.24 29.34 86 31Q75.5 45 65 45Q54.5 45 44 31Q36.5 21 31 21Q25.5 21 18 31Q16.76 32.66 14.71 32.95Q12.66 33.24 11 32Q9.34 30.76 9.05 28.71Q8.76 26.66 10 25ZM27 72.5Q27 76 30.5 76H31.5Q35 76 35 72.5V57.5Q35 54 31.5 54H30.5Q27 54 27 57.5ZM44 72.5Q44 76 47.5 76H48.5Q52 76 52 72.5V57.5Q52 54 48.5 54H47.5Q44 54 44 57.5ZM61 72.5Q61 76 64.5 76H65.5Q69 76 69 72.5V57.5Q69 54 65.5 54H64.5Q61 54 61 57.5Z"/></symbol>
+      <symbol id="i-trafic" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M70.54 22.91 76.16 40.91Q76.33 41.46 76.42 42.01Q80.29 42.15 83.07 44.93Q86 47.86 86 52V64Q86 68.14 83.07 71.07Q81.67 72.47 80 73.2V81Q80 83.07 78.54 84.54Q77.07 86 75 86H67Q64.93 86 63.46 84.54Q62 83.07 62 81V74H34V81Q34 83.07 32.54 84.54Q31.07 86 29 86H21Q18.93 86 17.46 84.54Q16 83.07 16 81V73.2Q14.33 72.47 12.93 71.07Q10 68.14 10 64V52Q10 47.86 12.93 44.93Q15.71 42.15 19.59 42.01Q19.67 41.45 19.84 40.91L25.46 22.91Q27 18 32.15 18H63.85Q69 18 70.54 22.91ZM63.68 28.05Q63 26 60.84 26H35.16Q33 26 32.32 28.05L28.32 40.05Q28.16 40.51 28.16 41Q28.16 44 31.16 44H64.84Q65.32 44 65.79 43.85Q68.63 42.9 67.68 40.05ZM32.5 58C32.5 54.41 29.59 51.5 26 51.5C22.41 51.5 19.5 54.41 19.5 58C19.5 61.59 22.41 64.5 26 64.5C29.59 64.5 32.5 61.59 32.5 58ZM76.5 58C76.5 54.41 73.59 51.5 70 51.5C66.41 51.5 63.5 54.41 63.5 58C63.5 61.59 66.41 64.5 70 64.5C73.59 64.5 76.5 61.59 76.5 58Z"/></symbol>
+      <symbol id="i-inconnu" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M24 34Q24 26.24 28.54 19.95Q33.09 13.66 40.45 11.22Q47.82 8.78 55.22 11.11Q62.62 13.44 67.25 19.67Q71.88 25.89 72 33.65Q72.11 41.41 67.66 47.77Q67.29 48.29 66.82 48.72L52.08 62.4Q50.26 64.09 47.77 64Q45.29 63.9 43.6 62.08Q41.91 60.26 42 57.77Q42.1 55.29 43.92 53.6L58.15 40.4Q60.05 37.41 60 33.83Q59.94 29.95 57.63 26.83Q55.31 23.72 51.61 22.56Q47.91 21.39 44.23 22.61Q40.54 23.83 38.27 26.97Q36 30.12 36 34Q36 36.49 34.24 38.24Q32.49 40 30 40Q27.51 40 25.76 38.24Q24 36.49 24 34ZM55.5 78C55.5 82.14 52.14 85.5 48 85.5C43.86 85.5 40.5 82.14 40.5 78C40.5 73.86 43.86 70.5 48 70.5C52.14 70.5 55.5 73.86 55.5 78Z"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M90 48V90H48C24.8 90 6 71.2 6 48C6 24.8 24.8 6 48 6C71.2 6 90 24.8 90 48ZM68.56 48C68.56 36.64 59.36 27.44 48 27.44C36.64 27.44 27.44 36.64 27.44 48C27.44 59.36 36.64 68.56 48 68.56C59.36 68.56 68.56 59.36 68.56 48Z"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M62 26V28H78Q81.31 28 83.66 30.34Q86 32.69 86 36V72Q86 75.31 83.66 77.66Q81.31 80 78 80H18Q14.69 80 12.34 77.66Q10 75.31 10 72V36Q10 32.69 12.34 30.34Q14.69 28 18 28H34V26Q34 22.69 36.34 20.34Q38.69 18 42 18H54Q57.31 18 59.66 20.34Q62 22.69 62 26ZM65 54C65 44.61 57.39 37 48 37C38.61 37 31 44.61 31 54C31 63.39 38.61 71 48 71C57.39 71 65 63.39 65 54ZM56 54C56 58.42 52.42 62 48 62C43.58 62 40 58.42 40 54C40 49.58 43.58 46 48 46C52.42 46 56 49.58 56 54Z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M22.6 47.4 39.56 64.37 75.01 21.84Q76.73 19.77 79.41 19.53Q82.09 19.28 84.16 21.01Q86.23 22.73 86.47 25.41Q86.72 28.09 84.99 30.16L44.99 78.16Q44.8 78.39 44.6 78.6Q42.69 80.5 40 80.5Q37.31 80.5 35.4 78.6L13.4 56.6Q11.5 54.69 11.5 52Q11.5 49.31 13.4 47.4Q15.31 45.5 18 45.5Q20.69 45.5 22.6 47.4Z"/></symbol>
+      <symbol id="i-resolu" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M88 48C88 70.09 70.09 88 48 88C25.91 88 8 70.09 8 48C8 25.91 25.91 8 48 8C70.09 8 88 25.91 88 48ZM31.36 46.64Q29.97 45.25 28 45.25Q26.03 45.25 24.64 46.64Q23.25 48.03 23.25 50Q23.25 51.97 24.64 53.36L39.64 68.36Q41.03 69.75 43 69.75Q44.97 69.75 46.36 68.36Q46.51 68.21 46.64 68.05L72.64 37.05Q73.9 35.54 73.73 33.58Q73.56 31.62 72.05 30.36Q70.54 29.1 68.58 29.27Q66.62 29.44 65.36 30.95L42.69 57.97Z"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 96 96"><path fill="currentColor" stroke="none" d="M88 48C88 70.09 70.09 88 48 88C25.91 88 8 70.09 8 48C8 25.91 25.91 8 48 8C70.09 8 88 25.91 88 48ZM52.25 24Q52.25 22.24 51.01 20.99Q49.76 19.75 48 19.75Q46.24 19.75 44.99 20.99Q43.75 22.24 43.75 24V50Q43.75 52.36 45.75 53.6L61.75 63.6Q63.24 64.54 64.96 64.14Q66.67 63.75 67.6 62.25Q68.54 60.76 68.14 59.04Q67.75 57.33 66.25 56.4L52.25 47.64Z"/></symbol>
+      <symbol id="m-dechets" viewBox="0 0 96 96"><path fill="var(--cat)" d="M96 48V96H48C21.49 96 0 74.51 0 48C0 21.49 21.49 0 48 0C74.51 0 96 21.49 96 48Z"/><path fill="#102a2b" stroke="none" d="M34.17 39.32H61.83Q63.12 39.32 64.02 40.23Q64.93 41.14 64.93 42.42Q64.93 42.62 64.91 42.82L61.37 70.1Q61.02 72.8 58.3 72.8H37.7Q34.98 72.8 34.63 70.1L31.09 42.82Q30.93 41.55 31.71 40.53Q32.5 39.51 33.77 39.35Q33.97 39.32 34.17 39.32ZM26.3 33.74V31.88Q26.3 29.4 28.78 29.4H40.56V25.68Q40.56 23.2 43.04 23.2H52.96Q55.44 23.2 55.44 25.68V29.4H67.22Q69.7 29.4 69.7 31.88V33.74Q69.7 36.22 67.22 36.22H28.78Q26.3 36.22 26.3 33.74ZM38.7 64.43Q38.7 66.6 40.87 66.6H41.18Q43.35 66.6 43.35 64.43V47.69Q43.35 45.52 41.18 45.52H40.87Q38.7 45.52 38.7 47.69ZM45.67 64.43Q45.67 66.6 47.85 66.6H48.15Q50.32 66.6 50.32 64.43V47.69Q50.32 45.52 48.15 45.52H47.85Q45.67 45.52 45.67 47.69ZM52.65 64.43Q52.65 66.6 54.82 66.6H55.13Q57.3 66.6 57.3 64.43V47.69Q57.3 45.52 55.13 45.52H54.82Q52.65 45.52 52.65 47.69Z"/></symbol>
+      <symbol id="m-caniveau" viewBox="0 0 96 96"><path fill="var(--cat)" d="M96 48V96H48C21.49 96 0 74.51 0 48C0 21.49 21.49 0 48 0C74.51 0 96 21.49 96 48Z"/><path fill="#102a2b" stroke="none" d="M26.92 65.98V51.1Q26.92 49.3 28.19 48.03Q29.46 46.76 31.26 46.76H64.74Q66.54 46.76 67.81 48.03Q69.08 49.3 69.08 51.1V65.98Q69.08 67.78 67.81 69.05Q66.54 70.32 64.74 70.32H31.26Q29.46 70.32 28.19 69.05Q26.92 67.78 26.92 65.98ZM24.44 33.74Q30.95 25.06 37.46 25.06Q43.97 25.06 50.48 33.74Q55.13 39.94 58.54 39.94Q61.95 39.94 66.6 33.74Q67.37 32.71 68.64 32.53Q69.91 32.35 70.94 33.12Q71.97 33.89 72.15 35.16Q72.33 36.43 71.56 37.46Q65.05 46.14 58.54 46.14Q52.03 46.14 45.52 37.46Q40.87 31.26 37.46 31.26Q34.05 31.26 29.4 37.46Q28.63 38.49 27.36 38.67Q26.09 38.85 25.06 38.08Q24.03 37.31 23.85 36.04Q23.67 34.77 24.44 33.74ZM34.98 63.19Q34.98 65.36 37.15 65.36H37.77Q39.94 65.36 39.94 63.19V53.89Q39.94 51.72 37.77 51.72H37.15Q34.98 51.72 34.98 53.89ZM45.52 63.19Q45.52 65.36 47.69 65.36H48.31Q50.48 65.36 50.48 63.19V53.89Q50.48 51.72 48.31 51.72H47.69Q45.52 51.72 45.52 53.89ZM56.06 63.19Q56.06 65.36 58.23 65.36H58.85Q61.02 65.36 61.02 63.19V53.89Q61.02 51.72 58.85 51.72H58.23Q56.06 51.72 56.06 53.89Z"/></symbol>
+      <symbol id="m-trafic" viewBox="0 0 96 96"><path fill="var(--cat)" d="M96 48V96H48C21.49 96 0 74.51 0 48C0 21.49 21.49 0 48 0C74.51 0 96 21.49 96 48Z"/><path fill="#102a2b" stroke="none" d="M61.97 32.45 65.46 43.61Q65.57 43.95 65.62 44.28Q68.02 44.37 69.74 46.1Q71.56 47.91 71.56 50.48V57.92Q71.56 60.49 69.74 62.3Q68.88 63.17 67.84 63.62V68.46Q67.84 69.74 66.93 70.65Q66.02 71.56 64.74 71.56H59.78Q58.5 71.56 57.59 70.65Q56.68 69.74 56.68 68.46V64.12H39.32V68.46Q39.32 69.74 38.41 70.65Q37.5 71.56 36.22 71.56H31.26Q29.98 71.56 29.07 70.65Q28.16 69.74 28.16 68.46V63.62Q27.12 63.17 26.26 62.3Q24.44 60.49 24.44 57.92V50.48Q24.44 47.91 26.26 46.1Q27.98 44.37 30.39 44.28Q30.44 43.94 30.54 43.61L34.03 32.45Q34.98 29.4 38.17 29.4H57.83Q61.02 29.4 61.97 32.45ZM57.72 35.63Q57.3 34.36 55.96 34.36H40.04Q38.7 34.36 38.28 35.63L35.8 43.07Q35.7 43.36 35.7 43.66Q35.7 45.52 37.56 45.52H58.44Q58.74 45.52 59.03 45.42Q60.79 44.84 60.2 43.07ZM38.39 54.2C38.39 51.97 36.59 50.17 34.36 50.17C32.13 50.17 30.33 51.97 30.33 54.2C30.33 56.43 32.13 58.23 34.36 58.23C36.59 58.23 38.39 56.43 38.39 54.2ZM65.67 54.2C65.67 51.97 63.87 50.17 61.64 50.17C59.41 50.17 57.61 51.97 57.61 54.2C57.61 56.43 59.41 58.23 61.64 58.23C63.87 58.23 65.67 56.43 65.67 54.2Z"/></symbol>
+      <symbol id="m-inconnu" viewBox="0 0 96 96"><path fill="var(--cat)" d="M96 48V96H48C21.49 96 0 74.51 0 48C0 21.49 21.49 0 48 0C74.51 0 96 21.49 96 48Z"/><path fill="#102a2b" stroke="none" d="M33.12 39.32Q33.12 34.51 35.94 30.61Q38.75 26.71 43.32 25.2Q47.89 23.68 52.47 25.13Q57.06 26.58 59.94 30.43Q62.81 34.29 62.88 39.1Q62.95 43.91 60.19 47.85Q59.96 48.18 59.67 48.45L50.53 56.93Q49.4 57.98 47.86 57.92Q46.32 57.86 45.27 56.73Q44.22 55.6 44.28 54.06Q44.34 52.52 45.47 51.47L54.29 43.29Q55.47 41.44 55.44 39.21Q55.4 36.81 53.97 34.88Q52.53 32.95 50.24 32.22Q47.94 31.5 45.66 32.26Q43.38 33.01 41.97 34.96Q40.56 36.91 40.56 39.32Q40.56 40.86 39.47 41.95Q38.38 43.04 36.84 43.04Q35.3 43.04 34.21 41.95Q33.12 40.86 33.12 39.32ZM52.65 66.6C52.65 69.17 50.57 71.25 48 71.25C45.43 71.25 43.35 69.17 43.35 66.6C43.35 64.03 45.43 61.95 48 61.95C50.57 61.95 52.65 64.03 52.65 66.6Z"/></symbol>
+      <symbol id="indice-1" viewBox="0 0 256 256"><path fill="currentColor" stroke="none" d="M122 66V122H66C35.07 122 10 96.93 10 66C10 35.07 35.07 10 66 10C96.93 10 122 35.07 122 66ZM93.42 66C93.42 50.86 81.14 38.58 66 38.58C50.86 38.58 38.58 50.86 38.58 66C38.58 81.14 50.86 93.42 66 93.42C81.14 93.42 93.42 81.14 93.42 66Z"/><path fill="var(--indice-empty)" stroke="none" d="M134 193V134H193Q217.44 134 234.72 151.28Q252 168.56 252 193Q252 217.44 234.72 234.72Q217.44 252 193 252Q168.56 252 151.28 234.72Q134 217.44 134 193ZM193 122H134V63Q134 38.56 151.28 21.28Q168.56 4 193 4Q217.44 4 234.72 21.28Q252 38.56 252 63Q252 87.44 234.72 104.72Q217.44 122 193 122ZM63 134H122V193Q122 217.44 104.72 234.72Q87.44 252 63 252Q38.56 252 21.28 234.72Q4 217.44 4 193Q4 168.56 21.28 151.28Q38.56 134 63 134ZM193 116Q214.95 116 230.48 100.48Q246 84.95 246 63Q246 41.05 230.48 25.52Q214.95 10 193 10Q171.05 10 155.52 25.52Q140 41.05 140 63V116ZM63 140Q41.05 140 25.52 155.52Q10 171.05 10 193Q10 214.95 25.52 230.48Q41.05 246 63 246Q84.95 246 100.48 230.48Q116 214.95 116 193V140ZM140 193Q140 214.95 155.52 230.48Q171.05 246 193 246Q214.95 246 230.48 230.48Q246 214.95 246 193Q246 171.05 230.48 155.52Q214.95 140 193 140H140Z"/></symbol>
+      <symbol id="indice-2" viewBox="0 0 256 256"><path fill="currentColor" stroke="none" d="M122 66V122H66C35.07 122 10 96.93 10 66C10 35.07 35.07 10 66 10C96.93 10 122 35.07 122 66ZM190 122H134V66C134 35.07 159.07 10 190 10C220.93 10 246 35.07 246 66C246 96.93 220.93 122 190 122ZM190 93.42C205.14 93.42 217.42 81.14 217.42 66C217.42 50.86 205.14 38.58 190 38.58C174.86 38.58 162.58 50.86 162.58 66C162.58 81.14 174.86 93.42 190 93.42ZM93.42 66C93.42 50.86 81.14 38.58 66 38.58C50.86 38.58 38.58 50.86 38.58 66C38.58 81.14 50.86 93.42 66 93.42C81.14 93.42 93.42 81.14 93.42 66Z"/><path fill="var(--indice-empty)" stroke="none" d="M134 193V134H193Q217.44 134 234.72 151.28Q252 168.56 252 193Q252 217.44 234.72 234.72Q217.44 252 193 252Q168.56 252 151.28 234.72Q134 217.44 134 193ZM63 134H122V193Q122 217.44 104.72 234.72Q87.44 252 63 252Q38.56 252 21.28 234.72Q4 217.44 4 193Q4 168.56 21.28 151.28Q38.56 134 63 134ZM63 140Q41.05 140 25.52 155.52Q10 171.05 10 193Q10 214.95 25.52 230.48Q41.05 246 63 246Q84.95 246 100.48 230.48Q116 214.95 116 193V140ZM140 193Q140 214.95 155.52 230.48Q171.05 246 193 246Q214.95 246 230.48 230.48Q246 214.95 246 193Q246 171.05 230.48 155.52Q214.95 140 193 140H140Z"/></symbol>
+      <symbol id="indice-3" viewBox="0 0 256 256"><path fill="currentColor" stroke="none" d="M122 66V122H66C35.07 122 10 96.93 10 66C10 35.07 35.07 10 66 10C96.93 10 122 35.07 122 66ZM134 190V134H190C220.93 134 246 159.07 246 190C246 220.93 220.93 246 190 246C159.07 246 134 220.93 134 190ZM190 122H134V66C134 35.07 159.07 10 190 10C220.93 10 246 35.07 246 66C246 96.93 220.93 122 190 122ZM190 93.42C205.14 93.42 217.42 81.14 217.42 66C217.42 50.86 205.14 38.58 190 38.58C174.86 38.58 162.58 50.86 162.58 66C162.58 81.14 174.86 93.42 190 93.42ZM93.42 66C93.42 50.86 81.14 38.58 66 38.58C50.86 38.58 38.58 50.86 38.58 66C38.58 81.14 50.86 93.42 66 93.42C81.14 93.42 93.42 81.14 93.42 66ZM162.58 190C162.58 205.14 174.86 217.42 190 217.42C205.14 217.42 217.42 205.14 217.42 190C217.42 174.86 205.14 162.58 190 162.58C174.86 162.58 162.58 174.86 162.58 190Z"/><path fill="var(--indice-empty)" stroke="none" d="M63 134H122V193Q122 217.44 104.72 234.72Q87.44 252 63 252Q38.56 252 21.28 234.72Q4 217.44 4 193Q4 168.56 21.28 151.28Q38.56 134 63 134ZM63 140Q41.05 140 25.52 155.52Q10 171.05 10 193Q10 214.95 25.52 230.48Q41.05 246 63 246Q84.95 246 100.48 230.48Q116 214.95 116 193V140Z"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 9.5V20h14V9.5M10 20v-6h4v6"/></symbol>
+      <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3 6.5V20l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4zM9 4v13.5M15 6.5V20"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol>
+      <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.5-6 6-6s6 2.5 6 6M16 4.800a3.5 3.5 0 0 1 0 6.400M18 14.5c1.900.8 3 2.900 3 5.5"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4.5L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4.5l2-2.5M20 20v-5h-5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    </svg>
+
+    <a id="skipLink" class="skip-link" href="#contenu">Aller au contenu</a>
+
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Snart, accueil">
-        <img src="/icons/snart.svg" alt="" width="42" height="42">
-        <span><strong>Snart</strong><small>Signalements citoyens</small></span>
+      <a class="brand" href="#/" aria-label="Snart, accueil">
+        <img src="icons/snart-mot-blanc.svg" alt="">
       </a>
-      <div class="topbar-meta">
-        <span id="networkState" class="network-state" role="status">Connexion…</span>
-        <a class="text-link" href="/docs" target="_blank" rel="noreferrer">API</a>
-      </div>
+      <nav class="tabbar" aria-label="Navigation principale">
+        <a href="#/" data-nav="home"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Accueil</span></a>
+        <a href="#/carte" data-nav="map"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg><span>Carte</span></a>
+        <a class="tabbar-action" href="#/signaler" data-nav="report"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Signaler</span></a>
+        <a href="#/liste" data-nav="list"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg><span>Liste</span></a>
+      </nav>
+      <span id="networkState" class="network-state" role="status">Connexion…</span>
     </header>
 
-    <main>
-      <section class="intro">
-        <div>
-          <p class="eyebrow">Lubumbashi · Observations de terrain</p>
-          <h1>Tu signales,<br><span>l’IA structure.</span></h1>
-          <p class="intro-copy">Déchets, caniveaux bouchés et embouteillages : une carte commune des problèmes observés et de leur évolution.</p>
-        </div>
-        <div class="intro-stat" aria-label="Les signalements sont corroborés par la communauté">
-          <span class="pulse-dot"></span>
-          <div><strong>Signalements suivis</strong><small>Fraîcheur et confirmations visibles</small></div>
-        </div>
-      </section>
+    <div id="updateBanner" class="banner" role="status" hidden></div>
+    <div id="queueBanner" class="banner is-queue" role="status" hidden>
+      <span id="queueBannerText"></span>
+      <a href="#/attente">Voir</a>
+    </div>
 
-      <section class="filters" aria-label="Filtrer les signalements">
-        <button class="filter-chip is-active" type="button" data-filter="all">Tous</button>
-        <button class="filter-chip" type="button" data-filter="dechets"><span class="legend-dot waste"></span>Déchets</button>
-        <button class="filter-chip" type="button" data-filter="caniveau_bouche"><span class="legend-dot drain"></span>Caniveaux bouchés</button>
-        <button class="filter-chip" type="button" data-filter="embouteillage"><span class="legend-dot traffic"></span>Embouteillages</button>
-        <button class="refresh-button" id="refreshButton" type="button" title="Actualiser les signalements">Actualiser <span aria-hidden="true">↻</span></button>
-      </section>
-
-      <section class="workspace">
-        <aside class="report-panel panel">
-          <div class="panel-heading">
-            <div><p class="eyebrow">Contribution</p><h2>Signaler un problème</h2></div>
-            <span class="step-mark">01</span>
+    <main id="contenu">
+      <section data-view="home">
+        <div class="hero">
+          <p class="eyebrow">Lubumbashi</p>
+          <h1 tabindex="-1">Tu signales,<br><span>l’IA structure.</span></h1>
+          <p class="hero-copy">Déchets, caniveaux bouchés, embouteillages : décris ce que tu vois, et tout le monde le retrouve sur la même carte.</p>
+          <div class="hero-actions">
+            <a class="primary-button is-lime" href="#/signaler"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Signaler un problème</span></a>
+            <a class="secondary-button is-on-dark" href="#/carte"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg><span>Voir la carte</span></a>
           </div>
-          <form id="reportForm">
-            <label for="description">Que se passe-t-il ?</label>
-            <textarea id="description" name="description" minlength="8" maxlength="2000" placeholder="Ex. : Un caniveau est bouché et l’eau déborde près du marché…" required></textarea>
+        </div>
 
-            <label for="category">Catégorie</label>
-            <select id="category" name="category">
-              <option value="auto">Proposition automatique</option>
-              <option value="dechets">Déchets</option>
-              <option value="caniveau_bouche">Caniveau bouché</option>
-              <option value="embouteillage">Embouteillage</option>
-            </select>
+        <div class="page">
+          <section class="home-block" aria-labelledby="homeLiveTitle">
+            <h2 id="homeLiveTitle">En ce moment</h2>
+            <div id="homeLive" aria-live="polite"></div>
+          </section>
 
-            <div class="location-row">
-              <div class="location-copy">
-                <strong>Position du problème</strong>
-                <span id="locationLabel">Utiliser le GPS ou placer une épingle sur la carte.</span>
-              </div>
-              <button id="locateButton" class="icon-button" type="button" aria-label="Utiliser ma position">⌖</button>
+          <section id="homeRecent" class="home-block" aria-labelledby="homeRecentTitle" hidden>
+            <div class="section-heading">
+              <h2 id="homeRecentTitle">Derniers signalements</h2>
+              <a class="text-link" href="#/liste">Tout voir</a>
             </div>
+            <div class="reports-list"></div>
+          </section>
 
-            <label class="upload-control" for="photo">
-              <span class="upload-icon" aria-hidden="true">＋</span>
-              <span><strong>Ajouter une photo ou une capture</strong><small>Image facultative · 8 Mo maximum</small></span>
-              <input id="photo" name="photo" type="file" accept="image/*" capture="environment">
-            </label>
-            <div id="photoPreview" class="photo-preview" hidden></div>
+          <section class="home-block" aria-labelledby="homeSeeTitle">
+            <h2 id="homeSeeTitle">Ce que tu peux signaler</h2>
+            <ul class="photo-grid">
+              <li><figure><img src="images/dechets.webp" alt="Tas de déchets le long d’un mur, dans une rue de terre." width="720" height="480" loading="lazy"><figcaption>Déchets</figcaption></figure></li>
+              <li><figure><img src="images/caniveau.webp" alt="Caniveau bouché par des bouteilles et des feuilles, l’eau déborde." width="720" height="480" loading="lazy"><figcaption>Caniveaux bouchés</figcaption></figure></li>
+              <li><figure><img src="images/embouteillage.webp" alt="Longue file de voitures et de motos sur une avenue." width="720" height="480" loading="lazy"><figcaption>Embouteillages</figcaption></figure></li>
+            </ul>
+            <p class="detail-hint">Images d’illustration générées par IA, pas des signalements réels.</p>
+          </section>
 
-            <button class="primary-button" id="submitButton" type="submit">Envoyer le signalement <span aria-hidden="true">↗</span></button>
-            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
-          </form>
-          <p class="privacy-note">La position est demandée à l’action. Une confirmation proche augmente la corroboration, sans constituer une preuve absolue.</p>
-        </aside>
-
-        <section class="map-panel panel" aria-label="Carte et signalements">
-          <div id="pendingQueue" class="queue-banner" role="status" hidden></div>
-          <div class="map-heading">
-            <div><p class="eyebrow">Vue de terrain</p><h2>Carte des signalements</h2></div>
-            <span id="reportCount" class="count-pill">0 signalement</span>
-          </div>
-          <div id="map" class="map" role="application" aria-label="Carte interactive de Lubumbashi"></div>
-          <div class="list-heading"><h3>Activité récente</h3><span>Fiabilité communautaire estimée</span></div>
-          <div id="reportsList" class="reports-list" aria-live="polite"></div>
-          <div id="emptyState" class="empty-state" hidden>
-            <span aria-hidden="true">◎</span>
-            <strong>Aucun signalement dans cette vue</strong>
-            <p>Les signalements publiés apparaîtront ici et sur la carte.</p>
-          </div>
-        </section>
+          <section class="home-block" aria-labelledby="homeHowTitle">
+            <h2 id="homeHowTitle">Comment ça marche</h2>
+            <ol class="how-list">
+              <li><strong>Tu décris le problème.</strong> Ajoute une position et une photo si tu peux.</li>
+              <li><strong>Snart le range.</strong> Il propose une catégorie et un résumé, à vérifier.</li>
+              <li><strong>Les autres confirment.</strong> Chaque confirmation renforce la fiabilité estimée affichée sur la fiche.</li>
+            </ol>
+            <p class="detail-hint">La fiabilité estimée vient de la communauté, ce n’est pas une certification officielle. Les signalements restent des observations à confirmer.</p>
+          </section>
+        </div>
       </section>
 
-      <section class="method-note">
-        <span class="method-icon" aria-hidden="true">✳</span>
-        <p><strong>Un indice lisible.</strong> La fraîcheur, les confirmations distinctes, leur proximité GPS et la présence d’une image contribuent au score. Les données de localisation des personnes qui confirment ne sont pas affichées.</p>
+      <section data-view="map" class="map-view" hidden>
+        <h1 class="visually-hidden" tabindex="-1">Carte des signalements</h1>
+        <div id="mapFilters"></div>
+        <div class="map-layout">
+          <div class="map-area">
+            <div class="map-stage">
+              <div id="map" class="map" role="region" aria-label="Carte de Lubumbashi avec les signalements. La liste présente les mêmes informations en texte."></div>
+              <div id="mapFallback" class="state-block map-fallback" hidden>
+                <p>Pas de réseau pour la carte. La liste reste disponible.</p>
+                <button id="mapRetry" class="secondary-button" type="button">Réessayer</button>
+                <a class="text-link" href="#/liste">Ouvrir la liste</a>
+              </div>
+              <a class="map-cta" href="#/signaler"><span>Signaler</span> <span aria-hidden="true">↗</span></a>
+            </div>
+            <p id="mapNotice" class="map-notice" role="status" hidden></p>
+          </div>
+          <aside id="mapSide" class="map-side" aria-label="Signalements affichés"></aside>
+        </div>
+      </section>
+
+      <section data-view="list" class="page" hidden>
+        <div class="section-heading">
+          <h1 tabindex="-1">Signalements</h1>
+          <button id="listRefresh" class="text-button" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg><span>Actualiser</span></button>
+        </div>
+        <div id="listFilters"></div>
+        <p id="listCount" class="list-count" role="status"></p>
+        <div id="listResults"></div>
+      </section>
+
+      <section data-view="report" class="page is-narrow" hidden>
+        <p class="eyebrow is-light">Signaler un problème</p>
+        <h1 tabindex="-1">Que se passe-t-il ?</h1>
+        <p id="formOfflineHint" class="callout is-warning" hidden>Pas de réseau. Ton signalement partira dès qu’il revient.</p>
+
+        <form id="reportForm" novalidate>
+          <div class="field">
+            <label for="description">Décris ce que tu vois</label>
+            <textarea id="description" name="description" data-error-for="description" maxlength="2000" rows="5" required aria-describedby="descriptionHelp descriptionError" placeholder="Ex. : un caniveau est bouché et l’eau déborde près du marché."></textarea>
+            <div class="field-help">
+              <span id="descriptionHelp">8 caractères au minimum</span>
+              <span id="descriptionCount">0 / 2000</span>
+            </div>
+            <p id="descriptionError" class="field-error" hidden></p>
+          </div>
+
+          <fieldset class="field">
+            <legend>Catégorie</legend>
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="category_override" value="auto" data-error-for="category" checked><span>Laisser Snart proposer</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="dechets"><svg class="bubble waste" aria-hidden="true"><use href="#m-dechets"/></svg><span>Déchets</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="caniveau_bouche"><svg class="bubble drain" aria-hidden="true"><use href="#m-caniveau"/></svg><span>Caniveau bouché</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="embouteillage"><svg class="bubble traffic" aria-hidden="true"><use href="#m-trafic"/></svg><span>Embouteillage</span></label>
+            </div>
+            <p id="categoryError" class="field-error" hidden></p>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Emplacement du problème</legend>
+            <p id="locationLabel" class="field-note" role="status"></p>
+            <div class="field-actions">
+              <button id="locateButton" class="secondary-button" type="button" data-error-for="location"><svg class="icon" aria-hidden="true"><use href="#i-gps"/></svg><span>Utiliser mon GPS</span></button>
+              <button id="pickerButton" class="secondary-button" type="button" aria-expanded="false" aria-controls="pickerPanel"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span>Placer une épingle</span></button>
+              <button id="clearLocation" class="text-button" type="button" hidden><span>Retirer la position</span></button>
+            </div>
+            <p id="locationError" class="field-error" hidden></p>
+            <div id="pickerPanel" class="picker" hidden>
+              <p class="detail-hint">L’épingle marque le problème, pas toi. Touche la carte ou fais glisser l’épingle.</p>
+              <p id="pickerStatus" class="state-block" role="status" hidden></p>
+              <div id="pickerMap" class="picker-map" role="region" aria-label="Carte pour placer l’épingle sur le problème"></div>
+              <button id="pickerCenter" class="text-button" type="button" hidden><span>Placer l’épingle au centre de la carte</span></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Photo ou capture d’écran</legend>
+            <p class="field-note">Facultatif. JPEG, PNG ou WebP, 8 Mo au maximum.</p>
+            <div class="field-actions">
+              <label class="secondary-button file-button">
+                <svg class="icon" aria-hidden="true"><use href="#i-image"/></svg><span>Choisir une image</span>
+                <input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp" data-error-for="photo" aria-describedby="photoError">
+              </label>
+              <label class="secondary-button file-button">
+                <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg><span>Prendre une photo</span>
+                <input id="photoCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+              </label>
+            </div>
+            <p id="photoError" class="field-error" hidden></p>
+            <div id="photoPreview" class="photo-preview" hidden></div>
+          </fieldset>
+
+          <details class="field">
+            <summary>Tu l’as vu plus tôt ? Indique l’heure</summary>
+            <label for="observedAt">Heure de l’observation</label>
+            <input id="observedAt" name="observed_at" data-error-for="observed_at" type="datetime-local" aria-describedby="observed_atError">
+            <p class="field-note">Sans heure, Snart prend l’heure d’envoi. Cette valeur reste indicative.</p>
+            <p id="observed_atError" class="field-error" hidden></p>
+          </details>
+
+          <button class="primary-button" id="submitButton" type="submit"><span>Envoyer le signalement</span></button>
+          <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+
+        <section id="reportResult" class="result-panel" hidden></section>
+      </section>
+
+      <section data-view="detail" class="page is-narrow" hidden>
+        <a class="text-link back-link" href="#/liste">Retour à la liste</a>
+        <div id="detailContent"></div>
+      </section>
+
+      <section data-view="pending" class="page is-narrow" hidden>
+        <h1 tabindex="-1">En attente d’envoi</h1>
+        <div id="pendingContent"></div>
+      </section>
+
+      <section data-view="notfound" class="page is-narrow" hidden>
+        <h1 tabindex="-1">Page introuvable</h1>
+        <p>Cette adresse ne mène à aucun écran de Snart.</p>
+        <a class="secondary-button" href="#/">Retour à l’accueil</a>
       </section>
     </main>
 
-    <footer class="footer">
-      <span>Snart <span aria-hidden="true">·</span> Prototype communautaire</span>
-      <span>Les signalements décrivent des observations et restent sujets à confirmation.</span>
-    </footer>
-
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      crossorigin=""
-    ></script>
-    <script src="/app.js" defer></script>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
   </body>
 </html>

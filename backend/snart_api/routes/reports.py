@@ -68,6 +68,14 @@ def _load_report(report_id: int) -> sqlite3.Row:
     return row
 
 
+def _find_by_client_id(reporter_id: str, client_id: str) -> sqlite3.Row | None:
+    with closing(connect()) as connection:
+        return connection.execute(
+            REPORT_QUERY + " WHERE r.reporter_id = ? AND r.client_id = ?",
+            (reporter_id, client_id),
+        ).fetchone()
+
+
 def _serialize(row: sqlite3.Row, now: datetime | None = None) -> ReportRead:
     now = now or datetime.now(timezone.utc)
     nearby = int(row["nearby"])
@@ -156,6 +164,22 @@ async def _read_photo(upload: UploadFile | None) -> tuple[bytes | None, str | No
     return sanitized, safe_mime
 
 
+def _insert_report(values: tuple[object, ...]) -> int:
+    with closing(connect()) as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO reports (
+                category, summary, description, latitude, longitude,
+                location_accuracy_m, reporter_id, created_at, observed_at,
+                photo, photo_mime, structuring_mode, model_id, needs_review, client_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            values,
+        )
+        connection.commit()
+        return int(cursor.lastrowid)
+
+
 @router.get("", response_model=list[ReportRead])
 def list_reports(
     category: Annotated[Category | None, Query()] = None,
@@ -185,6 +209,7 @@ def list_reports(
 
 @router.post("", response_model=ReportRead, status_code=201)
 async def create_report(
+    response: Response,
     description: Annotated[str, Form(min_length=8, max_length=2000)],
     reporter_id: Annotated[str, Form(min_length=8, max_length=80)],
     category_override: Annotated[str, Form()] = "auto",
@@ -192,6 +217,7 @@ async def create_report(
     longitude: Annotated[float | None, Form(ge=-180, le=180)] = None,
     location_accuracy_m: Annotated[float | None, Form(ge=0, le=100_000)] = None,
     observed_at: Annotated[str | None, Form()] = None,
+    client_id: Annotated[str | None, Form(min_length=8, max_length=80)] = None,
     photo: Annotated[UploadFile | None, File()] = None,
 ) -> ReportRead:
     description = description.strip()
@@ -204,6 +230,13 @@ async def create_report(
         raise HTTPException(status_code=422, detail="Latitude et longitude doivent être fournies ensemble")
     if category_override != "auto" and category_override not in VALID_CATEGORIES - {"indetermine"}:
         raise HTTPException(status_code=422, detail="Catégorie inconnue")
+
+    # A resend after a lost response returns the first report instead of a duplicate.
+    if client_id:
+        existing = _find_by_client_id(reporter_id, client_id)
+        if existing is not None:
+            response.status_code = 200
+            return _serialize(existing)
 
     try:
         observed = parse_datetime(observed_at) if observed_at else datetime.now(timezone.utc)
@@ -219,15 +252,8 @@ async def create_report(
     photo_bytes, photo_mime = await _read_photo(photo)
     structured: StructuredReport = await structure_report(description, category_override)
     created = _now_iso()
-    with closing(connect()) as connection:
-        cursor = connection.execute(
-            """
-            INSERT INTO reports (
-                category, summary, description, latitude, longitude,
-                location_accuracy_m, reporter_id, created_at, observed_at,
-                photo, photo_mime, structuring_mode, model_id, needs_review
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
+    try:
+        report_id = _insert_report(
             (
                 structured.category,
                 structured.summary,
@@ -243,11 +269,14 @@ async def create_report(
                 structured.provider,
                 structured.model_id,
                 int(structured.needs_review),
-            ),
+                client_id,
+            )
         )
-        report_id = cursor.lastrowid
-        connection.commit()
-    return _serialize(_load_report(int(report_id)))
+    except sqlite3.IntegrityError:
+        # Two concurrent resends: the first one wins.
+        response.status_code = 200
+        return _serialize(_find_by_client_id(reporter_id, client_id))
+    return _serialize(_load_report(report_id))
 
 
 @router.get("/{report_id}", response_model=ReportRead)
