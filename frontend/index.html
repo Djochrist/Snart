@@ -122,7 +122,7 @@
         <div class="map-layout">
           <div class="map-area">
             <div class="map-stage">
-              <div id="map" class="map" aria-label="Carte de Lubumbashi avec les signalements. La liste présente les mêmes informations en texte."></div>
+              <div id="map" class="map" role="region" aria-label="Carte de Lubumbashi avec les signalements. La liste présente les mêmes informations en texte."></div>
               <div id="mapFallback" class="state-block map-fallback" hidden>
                 <p>Pas de réseau pour la carte. La liste reste disponible.</p>
                 <button id="mapRetry" class="secondary-button" type="button">Réessayer</button>
@@ -185,7 +185,7 @@
             <div id="pickerPanel" class="picker" hidden>
               <p class="detail-hint">L’épingle marque le problème, pas toi. Touche la carte ou fais glisser l’épingle.</p>
               <p id="pickerStatus" class="state-block" role="status" hidden></p>
-              <div id="pickerMap" class="picker-map" aria-label="Carte pour placer l’épingle sur le problème"></div>
+              <div id="pickerMap" class="picker-map" role="region" aria-label="Carte pour placer l’épingle sur le problème"></div>
               <button id="pickerCenter" class="text-button" type="button" hidden><span>Placer l’épingle au centre de la carte</span></button>
             </div>
           </fieldset>

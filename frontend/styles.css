@@ -71,7 +71,8 @@ h1:focus, h2:focus { outline: none; }
 
 .tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 1000; display: grid; grid-template-columns: repeat(4, 1fr); height: calc(var(--tabbar-height) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: var(--panel); color: var(--muted); }
 .tabbar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font: 700 .8125rem var(--font-title); text-decoration: none; }
-.tabbar a[aria-current='page'] { color: var(--green); box-shadow: inset 0 3px 0 var(--green); }
+.tabbar a { border-top: 3px solid transparent; }
+.tabbar a[aria-current='page'] { border-top-color: var(--green); color: var(--green); }
 .tabbar :focus-visible { outline-color: var(--focus); outline-offset: -3px; }
 .tabbar .icon { width: 30px; height: 30px; padding: 4px; }
 .tabbar-action .icon { border-radius: var(--forme-petite); background: var(--green-dark); color: var(--lime); }
@@ -124,7 +125,7 @@ button:disabled { cursor: wait; opacity: .6; }
 .category-count strong { font: 800 1.15rem var(--font-title); }
 .photo-grid { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .photo-grid figure { margin: 0; }
-.photo-grid img { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: var(--forme); object-fit: cover; }
+.photo-grid img { width: 100%; height: auto; aspect-ratio: 2 / 1; border-radius: var(--forme); object-fit: cover; }
 .photo-grid figcaption { margin-top: 6px; font-weight: 500; }
 .how-list { display: grid; gap: 10px; margin: 0; padding-left: 22px; }
 
@@ -203,9 +204,10 @@ textarea::placeholder { color: #66797a; }
 .field-note { color: var(--muted); font-size: .9375rem; }
 .field-error { color: var(--error); font-size: .9375rem; font-weight: 500; }
 .field-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.field-actions .secondary-button { flex: 1 1 150px; }
+.field-actions .secondary-button { flex: 1 1 150px; gap: 7px; padding-right: 10px; padding-left: 10px; font-size: .9375rem; }
 .choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; }
-.choice { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 52px; padding: 8px 12px; border: 1.5px solid #b8c6bf; border-radius: var(--forme-petite); background: var(--panel); font-size: .9375rem; font-weight: 500; cursor: pointer; }
+.choice { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 52px; padding: 8px 10px; border: 1.5px solid #b8c6bf; border-radius: var(--forme-petite); background: var(--panel); font-size: .9375rem; font-weight: 500; cursor: pointer; }
+.choice .bubble { width: 22px; height: 22px; }
 .choice input { flex: 0 0 auto; width: 18px; height: 18px; margin: 0; accent-color: var(--green); }
 .choice:has(input:checked) { border-color: var(--green); background: #e9f4ec; }
 .file-button { position: relative; cursor: pointer; }
@@ -218,6 +220,7 @@ textarea::placeholder { color: #66797a; }
 .picker-map { height: 270px; border: 1px solid var(--line); border-radius: var(--forme-petite); background: #e3eae3; z-index: 0; }
 .form-message { min-height: 1.5em; color: var(--green); font-weight: 500; }
 .form-message.is-error { color: var(--error); }
+.form-message:empty { min-height: 0; }
 .result-panel { display: grid; gap: 12px; margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: var(--forme); background: var(--panel); }
 .result-summary { font-size: 1.0625rem; font-weight: 500; overflow-wrap: anywhere; }
 .result-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -278,7 +281,7 @@ textarea::placeholder { color: #66797a; }
   .tabbar { position: static; display: flex; gap: 4px; height: auto; padding: 0; margin: 0 auto 0 34px; border: 0; background: transparent; color: #d4e3dd; }
   .tabbar a { flex-direction: row; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 10px; font-size: .9375rem; }
   .tabbar a:hover { background: rgba(255, 255, 255, .08); }
-  .tabbar a[aria-current='page'] { color: var(--lime); box-shadow: none; background: rgba(255, 255, 255, .1); }
+  .tabbar a[aria-current='page'] { border-top-color: transparent; color: var(--lime); background: rgba(255, 255, 255, .1); }
   .tabbar :focus-visible { outline-color: var(--lime); outline-offset: 2px; }
   .tabbar .icon { width: 22px; height: 22px; padding: 0; }
   .tabbar-action .icon { background: transparent; color: inherit; }

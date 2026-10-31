@@ -18,7 +18,7 @@ from ..schemas import Category, StructuredReport
 LOGGER = logging.getLogger(__name__)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 PROVIDER = (os.getenv("SNART_MODEL_PROVIDER") or ("gemini" if GEMINI_API_KEY else "demo_rules")).strip().lower()
-MODEL_ID = os.getenv("SNART_MODEL_ID") or os.getenv("AI_MODEL") or "gemini-3.5-flash-lite"
+MODEL_ID = os.getenv("SNART_MODEL_ID") or os.getenv("AI_MODEL") or "gemma-4-26b-a4b-it"
 
 
 def _model_timeout(value: str) -> float:
@@ -68,6 +68,11 @@ de circulation d'un bouchon d'objet. Respecte les négations et les incertitudes
 Si plusieurs incidents indépendants empêchent de choisir le problème principal,
 choisis indetermine. Mets needs_review à true pour toute ambiguïté, contradiction,
 incertitude ou catégorie indetermine. Ce marqueur ne mesure pas la véracité.
+
+PRIORITÉ
+Dès qu'un caniveau, un égout ou un drain est bouché, obstrué ou déborde, la catégorie est
+caniveau_bouche, jamais dechets, même si le texte parle aussi de déchets, d'odeur ou de la
+route. Réserve dechets aux déchets observés sans caniveau, égout ou drain obstrué.
 
 RÉSUMÉ
 Écris une phrase neutre en français, de 1 à 240 caractères. N'ajoute aucun fait,
@@ -165,6 +170,14 @@ def _demo_structure(text: str, category_override: str | None = None) -> Structur
     )
 
 
+def _json_object(output: str) -> object:
+    # Gemma 4 can wrap valid JSON in Markdown fences; the schema still validates the content.
+    start, end = output.find("{"), output.rfind("}")
+    if start == -1 or end < start:
+        raise ValueError("The model did not return a JSON object")
+    return json.loads(output[start : end + 1])
+
+
 async def _gemini_structure(text: str) -> GeminiSuggestion:
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY is not configured")
@@ -196,7 +209,7 @@ async def _gemini_structure(text: str) -> GeminiSuggestion:
     output = interaction.output_text
     if not output:
         raise ValueError("Gemini returned an empty response")
-    return GeminiSuggestion.model_validate(json.loads(output))
+    return GeminiSuggestion.model_validate(_json_object(output))
 
 
 async def structure_report(text: str, category_override: str | None = None) -> StructuredReport:

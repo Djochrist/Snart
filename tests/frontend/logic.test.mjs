@@ -93,6 +93,11 @@ test('le mode demo_rules ne prétend pas à de l’IA', () => {
   assert.match(structuringNote({ structuring_mode: 'demo_rules' }), /sans modèle d’IA/);
 });
 
+test('la fiche nomme Gemma 4 quand l’API l’indique', () => {
+  assert.match(structuringNote({ structuring_mode: 'gemini', model_id: 'gemma-4-26b-a4b-it' }), /IA Gemma 4/);
+  assert.match(structuringNote({ structuring_mode: 'gemini', model_id: 'autre' }), /IA Gemini/);
+});
+
 test('les données de démonstration sont repérées', () => {
   assert.equal(isDemo({ description: '[DÉMO] Tas de déchets' }), true);
   assert.equal(isDemo({ description: 'Tas de déchets' }), false);

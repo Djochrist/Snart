@@ -79,7 +79,8 @@ export function structuringNote(report) {
     return 'Résumé et catégorie obtenus par des règles simples, sans modèle d’IA.';
   }
   if (report.structuring_mode === 'gemini') {
-    return 'Résumé et catégorie proposés par l’IA Gemini à partir de la description. C’est une proposition.';
+    const model = String(report.model_id || '').startsWith('gemma-4') ? 'Gemma 4' : 'Gemini';
+    return `Résumé et catégorie proposés par l’IA ${model} à partir de la description. C’est une proposition.`;
   }
   return 'Résumé et catégorie proposés automatiquement.';
 }
