@@ -1,4 +1,4 @@
-# Sinart
+# Snart
 
 **Plateforme citoyenne de signalement urbain intelligent**
 *Tu signales, l’IA structure.*
@@ -45,7 +45,7 @@ Prérequis : Python pris en charge par le projet et `uv` installé.
 
 ```powershell
 uv sync
-uv run uvicorn sinart_api.main:app --app-dir backend --reload
+uv run uvicorn snart_api.main:app --app-dir backend --reload
 ```
 
 Ouvrir ensuite `http://127.0.0.1:8000`. Le serveur fournit l’interface, les ressources PWA et l’API. La base SQLite de développement est créée localement dans `data/` et n’est pas versionnée.
