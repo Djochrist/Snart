@@ -4,121 +4,218 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#102a2b">
-    <meta name="description" content="Snart organise les signalements citoyens de déchets, caniveaux bouchés et embouteillages.">
-    <link rel="icon" href="/icons/snart.svg" type="image/svg+xml">
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="stylesheet" href="/styles.css">
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      crossorigin=""
-    >
+    <meta name="description" content="Snart organise les signalements citoyens de déchets, caniveaux bouchés et embouteillages à Lubumbashi.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Snart">
     <title>Snart — Signalements citoyens</title>
+    <link rel="icon" href="icons/favicon.ico" sizes="any">
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap">
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="app.js"></script>
   </head>
-  <body>
+  <body data-route="home">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-dechets" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></symbol>
+      <symbol id="i-caniveau" viewBox="0 0 24 24"><path d="M3 5h18v6H3zM7 5v6M12 5v6M17 5v6M6 15c0 1.5-1 2-1 3a1.5 1.5 0 0 0 3 0c0-1-1-1.5-1-3M12 15c0 1.5-1 2-1 3a1.5 1.5 0 0 0 3 0c0-1-1-1.5-1-3M18 15c0 1.5-1 2-1 3a1.5 1.5 0 0 0 3 0c0-1-1-1.5-1-3"/></symbol>
+      <symbol id="i-trafic" viewBox="0 0 24 24"><path d="M5 11l2-5.5h10l2 5.5M4 11h16v6H4zM6 17v2.5M18 17v2.5M7.5 14h.01M16.5 14h.01"/></symbol>
+      <symbol id="i-inconnu" viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 4.5 2.600c-1 .6-1.5 1.200-1.5 2.400M12 18h.01"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 9.5V20h14V9.5M10 20v-6h4v6"/></symbol>
+      <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3 6.5V20l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4zM9 4v13.5M15 6.5V20"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+      <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.5-6 6-6s6 2.5 6 6M16 4.800a3.5 3.5 0 0 1 0 6.400M18 14.5c1.900.8 3 2.900 3 5.5"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4.5L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4.5l2-2.5M20 20v-5h-5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    </svg>
+
+    <a id="skipLink" class="skip-link" href="#contenu">Aller au contenu</a>
+
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Snart, accueil">
-        <img src="/icons/snart.svg" alt="" width="42" height="42">
-        <span><strong>Snart</strong><small>Signalements citoyens</small></span>
+      <a class="brand" href="#/" aria-label="Snart, accueil">
+        <img src="icons/snart-mot-blanc.svg" alt="">
       </a>
-      <div class="topbar-meta">
-        <span id="networkState" class="network-state" role="status">Connexion…</span>
-        <a class="text-link" href="/docs" target="_blank" rel="noreferrer">API</a>
-      </div>
+      <nav class="tabbar" aria-label="Navigation principale">
+        <a href="#/" data-nav="home"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Accueil</span></a>
+        <a href="#/carte" data-nav="map"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg><span>Carte</span></a>
+        <a class="tabbar-action" href="#/signaler" data-nav="report"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Signaler</span></a>
+        <a href="#/liste" data-nav="list"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg><span>Liste</span></a>
+      </nav>
+      <span id="networkState" class="network-state" role="status">Connexion…</span>
     </header>
 
-    <main>
-      <section class="intro">
-        <div>
-          <p class="eyebrow">Lubumbashi · Observations de terrain</p>
-          <h1>Tu signales,<br><span>l’IA structure.</span></h1>
-          <p class="intro-copy">Déchets, caniveaux bouchés et embouteillages : une carte commune des problèmes observés et de leur évolution.</p>
-        </div>
-        <div class="intro-stat" aria-label="Les signalements sont corroborés par la communauté">
-          <span class="pulse-dot"></span>
-          <div><strong>Signalements suivis</strong><small>Fraîcheur et confirmations visibles</small></div>
-        </div>
-      </section>
+    <div id="updateBanner" class="banner" role="status" hidden></div>
+    <div id="queueBanner" class="banner is-queue" role="status" hidden>
+      <span id="queueBannerText"></span>
+      <a href="#/attente">Voir</a>
+    </div>
 
-      <section class="filters" aria-label="Filtrer les signalements">
-        <button class="filter-chip is-active" type="button" data-filter="all">Tous</button>
-        <button class="filter-chip" type="button" data-filter="dechets"><span class="legend-dot waste"></span>Déchets</button>
-        <button class="filter-chip" type="button" data-filter="caniveau_bouche"><span class="legend-dot drain"></span>Caniveaux bouchés</button>
-        <button class="filter-chip" type="button" data-filter="embouteillage"><span class="legend-dot traffic"></span>Embouteillages</button>
-        <button class="refresh-button" id="refreshButton" type="button" title="Actualiser les signalements">Actualiser <span aria-hidden="true">↻</span></button>
-      </section>
-
-      <section class="workspace">
-        <aside class="report-panel panel">
-          <div class="panel-heading">
-            <div><p class="eyebrow">Contribution</p><h2>Signaler un problème</h2></div>
-            <span class="step-mark">01</span>
+    <main id="contenu">
+      <section data-view="home">
+        <div class="hero">
+          <p class="eyebrow">Lubumbashi</p>
+          <h1 tabindex="-1">Tu signales,<br><span>l’IA structure.</span></h1>
+          <p class="hero-copy">Déchets, caniveaux bouchés, embouteillages : décris ce que tu vois, et tout le monde le retrouve sur la même carte.</p>
+          <div class="hero-actions">
+            <a class="primary-button is-lime" href="#/signaler"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Signaler un problème</span></a>
+            <a class="secondary-button is-on-dark" href="#/carte"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg><span>Voir la carte</span></a>
           </div>
-          <form id="reportForm">
-            <label for="description">Que se passe-t-il ?</label>
-            <textarea id="description" name="description" minlength="8" maxlength="2000" placeholder="Ex. : Un caniveau est bouché et l’eau déborde près du marché…" required></textarea>
+        </div>
 
-            <label for="category">Catégorie</label>
-            <select id="category" name="category">
-              <option value="auto">Proposition automatique</option>
-              <option value="dechets">Déchets</option>
-              <option value="caniveau_bouche">Caniveau bouché</option>
-              <option value="embouteillage">Embouteillage</option>
-            </select>
+        <div class="page">
+          <section class="home-block" aria-labelledby="homeLiveTitle">
+            <h2 id="homeLiveTitle">En ce moment</h2>
+            <div id="homeLive" aria-live="polite"></div>
+          </section>
 
-            <div class="location-row">
-              <div class="location-copy">
-                <strong>Position du problème</strong>
-                <span id="locationLabel">Utiliser le GPS ou placer une épingle sur la carte.</span>
-              </div>
-              <button id="locateButton" class="icon-button" type="button" aria-label="Utiliser ma position">⌖</button>
+          <section id="homeRecent" class="home-block" aria-labelledby="homeRecentTitle" hidden>
+            <div class="section-heading">
+              <h2 id="homeRecentTitle">Derniers signalements</h2>
+              <a class="text-link" href="#/liste">Tout voir</a>
             </div>
+            <div class="reports-list"></div>
+          </section>
 
-            <label class="upload-control" for="photo">
-              <span class="upload-icon" aria-hidden="true">＋</span>
-              <span><strong>Ajouter une photo ou une capture</strong><small>Image facultative · 8 Mo maximum</small></span>
-              <input id="photo" name="photo" type="file" accept="image/*" capture="environment">
-            </label>
-            <div id="photoPreview" class="photo-preview" hidden></div>
-
-            <button class="primary-button" id="submitButton" type="submit">Envoyer le signalement <span aria-hidden="true">↗</span></button>
-            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
-          </form>
-          <p class="privacy-note">La position est demandée à l’action. Une confirmation proche augmente la corroboration, sans constituer une preuve absolue.</p>
-        </aside>
-
-        <section class="map-panel panel" aria-label="Carte et signalements">
-          <div id="pendingQueue" class="queue-banner" role="status" hidden></div>
-          <div class="map-heading">
-            <div><p class="eyebrow">Vue de terrain</p><h2>Carte des signalements</h2></div>
-            <span id="reportCount" class="count-pill">0 signalement</span>
-          </div>
-          <div id="map" class="map" role="application" aria-label="Carte interactive de Lubumbashi"></div>
-          <div class="list-heading"><h3>Activité récente</h3><span>Fiabilité communautaire estimée</span></div>
-          <div id="reportsList" class="reports-list" aria-live="polite"></div>
-          <div id="emptyState" class="empty-state" hidden>
-            <span aria-hidden="true">◎</span>
-            <strong>Aucun signalement dans cette vue</strong>
-            <p>Les signalements publiés apparaîtront ici et sur la carte.</p>
-          </div>
-        </section>
+          <section class="home-block" aria-labelledby="homeHowTitle">
+            <h2 id="homeHowTitle">Comment ça marche</h2>
+            <ol class="how-list">
+              <li><strong>Tu décris le problème.</strong> Ajoute une position et une photo si tu peux.</li>
+              <li><strong>Snart le range.</strong> Il propose une catégorie et un résumé, à vérifier.</li>
+              <li><strong>Les autres confirment.</strong> Chaque confirmation renforce l’indice affiché sur la fiche.</li>
+            </ol>
+            <p class="detail-hint">L’indice de corroboration est une estimation communautaire, pas une certification officielle. Les signalements restent des observations à confirmer.</p>
+          </section>
+        </div>
       </section>
 
-      <section class="method-note">
-        <span class="method-icon" aria-hidden="true">✳</span>
-        <p><strong>Un indice lisible.</strong> La fraîcheur, les confirmations distinctes, leur proximité GPS et la présence d’une image contribuent au score. Les données de localisation des personnes qui confirment ne sont pas affichées.</p>
+      <section data-view="map" class="map-view" hidden>
+        <h1 class="visually-hidden" tabindex="-1">Carte des signalements</h1>
+        <div id="mapFilters"></div>
+        <div class="map-layout">
+          <div class="map-area">
+            <div id="map" class="map" aria-label="Carte de Lubumbashi avec les signalements. La liste présente les mêmes informations en texte."></div>
+            <div id="mapFallback" class="state-block map-fallback" hidden>
+              <p>La carte demande une connexion et n’a pas pu se charger. La liste reste disponible.</p>
+              <button id="mapRetry" class="secondary-button" type="button">Réessayer</button>
+              <a class="text-link" href="#/liste">Ouvrir la liste</a>
+            </div>
+            <p id="mapNotice" class="map-notice" role="status" hidden></p>
+          </div>
+          <aside id="mapSide" class="map-side" aria-label="Signalements affichés"></aside>
+        </div>
+      </section>
+
+      <section data-view="list" class="page" hidden>
+        <div class="section-heading">
+          <h1 tabindex="-1">Signalements</h1>
+          <button id="listRefresh" class="text-button" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg><span>Actualiser</span></button>
+        </div>
+        <div id="listFilters"></div>
+        <p id="listCount" class="list-count" role="status"></p>
+        <div id="listResults"></div>
+      </section>
+
+      <section data-view="report" class="page is-narrow" hidden>
+        <h1 tabindex="-1">Signaler un problème</h1>
+        <p id="formOfflineHint" class="callout is-warning" hidden>Tu es hors ligne. Ton signalement sera gardé sur ce téléphone et envoyé plus tard.</p>
+
+        <form id="reportForm" novalidate>
+          <div class="field">
+            <label for="description">Que se passe-t-il ?</label>
+            <textarea id="description" name="description" data-error-for="description" maxlength="2000" rows="5" required aria-describedby="descriptionHelp descriptionError" placeholder="Ex. : un caniveau est bouché et l’eau déborde près du marché."></textarea>
+            <div class="field-help">
+              <span id="descriptionHelp">8 caractères au minimum</span>
+              <span id="descriptionCount">0 / 2000</span>
+            </div>
+            <p id="descriptionError" class="field-error" hidden></p>
+          </div>
+
+          <fieldset class="field">
+            <legend>Catégorie</legend>
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="category_override" value="auto" data-error-for="category" checked><span>Laisser Snart proposer</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="dechets"><svg class="icon" aria-hidden="true"><use href="#i-dechets"/></svg><span>Déchets</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="caniveau_bouche"><svg class="icon" aria-hidden="true"><use href="#i-caniveau"/></svg><span>Caniveau bouché</span></label>
+              <label class="choice"><input type="radio" name="category_override" value="embouteillage"><svg class="icon" aria-hidden="true"><use href="#i-trafic"/></svg><span>Embouteillage</span></label>
+            </div>
+            <p id="categoryError" class="field-error" hidden></p>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Emplacement du problème</legend>
+            <p id="locationLabel" class="field-note" role="status"></p>
+            <div class="field-actions">
+              <button id="locateButton" class="secondary-button" type="button" data-error-for="location"><svg class="icon" aria-hidden="true"><use href="#i-gps"/></svg><span>Utiliser mon GPS</span></button>
+              <button id="pickerButton" class="secondary-button" type="button" aria-expanded="false" aria-controls="pickerPanel"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span>Placer une épingle</span></button>
+              <button id="clearLocation" class="text-button" type="button" hidden><span>Retirer la position</span></button>
+            </div>
+            <p id="locationError" class="field-error" hidden></p>
+            <div id="pickerPanel" class="picker" hidden>
+              <p class="detail-hint">L’épingle marque le problème, pas toi. Touche la carte ou fais glisser l’épingle.</p>
+              <p id="pickerStatus" class="state-block" role="status" hidden></p>
+              <div id="pickerMap" class="picker-map" aria-label="Carte pour placer l’épingle sur le problème"></div>
+              <button id="pickerCenter" class="text-button" type="button" hidden><span>Placer l’épingle au centre de la carte</span></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Photo ou capture d’écran</legend>
+            <p class="field-note">Facultatif. JPEG, PNG ou WebP, 8 Mo au maximum.</p>
+            <div class="field-actions">
+              <label class="secondary-button file-button">
+                <svg class="icon" aria-hidden="true"><use href="#i-image"/></svg><span>Choisir une image</span>
+                <input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp" data-error-for="photo" aria-describedby="photoError">
+              </label>
+              <label class="secondary-button file-button">
+                <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg><span>Prendre une photo</span>
+                <input id="photoCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+              </label>
+            </div>
+            <p id="photoError" class="field-error" hidden></p>
+            <div id="photoPreview" class="photo-preview" hidden></div>
+          </fieldset>
+
+          <details class="field">
+            <summary>Tu l’as vu plus tôt ? Indique l’heure</summary>
+            <label for="observedAt">Heure de l’observation</label>
+            <input id="observedAt" name="observed_at" data-error-for="observed_at" type="datetime-local" aria-describedby="observed_atError">
+            <p class="field-note">Sans heure, Snart prend l’heure d’envoi. Cette valeur reste indicative.</p>
+            <p id="observed_atError" class="field-error" hidden></p>
+          </details>
+
+          <button class="primary-button" id="submitButton" type="submit"><span>Envoyer le signalement</span></button>
+          <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+
+        <section id="reportResult" class="result-panel" hidden></section>
+      </section>
+
+      <section data-view="detail" class="page is-narrow" hidden>
+        <a class="text-link back-link" href="#/liste">Retour à la liste</a>
+        <div id="detailContent"></div>
+      </section>
+
+      <section data-view="pending" class="page is-narrow" hidden>
+        <h1 tabindex="-1">En attente d’envoi</h1>
+        <div id="pendingContent"></div>
+      </section>
+
+      <section data-view="notfound" class="page is-narrow" hidden>
+        <h1 tabindex="-1">Page introuvable</h1>
+        <p>Cette adresse ne mène à aucun écran de Snart.</p>
+        <a class="secondary-button" href="#/">Retour à l’accueil</a>
       </section>
     </main>
 
-    <footer class="footer">
-      <span>Snart <span aria-hidden="true">·</span> Prototype communautaire</span>
-      <span>Les signalements décrivent des observations et restent sujets à confirmation.</span>
-    </footer>
-
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      crossorigin=""
-    ></script>
-    <script src="/app.js" defer></script>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
   </body>
 </html>
