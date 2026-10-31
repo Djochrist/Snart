@@ -78,6 +78,30 @@ Le format détaillé, les champs, les limites et la politique de score figurent 
 
 ## État du prototype
 
+### Vérification du backend
+
+```bash
+uv sync --frozen
+PYTHONPATH=backend uv run --frozen python -m unittest discover -s tests -v
+```
+
+Les tests couvrent la structuration, le contrat du SDK Gemini sur transport HTTP
+simulé, les erreurs et délais, SQLite, les routes, les votes, la proximité, les
+dates et les images. Ils utilisent une base temporaire et ne nécessitent pas de
+clé. Ils ne valident pas la qualité d'un modèle en ligne.
+
+`GET /api/reports` accepte aussi le filtre `status=active|stale|resolved`, appliqué
+avant `limit`. Seules les confirmations de proximité rafraîchissent l'observation
+et `last_confirmed_at`. Les coordonnées de confirmation doivent être fournies
+ensemble ; les champs inconnus sont rejetés. Les erreurs de validation renvoient
+`422` avec `loc`, `msg` et `type`, sans les valeurs d'entrée.
+
+Le choix manuel de catégorie ne supprime pas un avertissement `needs_review`
+émis par Gemini. Les sorties inachevées, non conformes au schéma ou dont le résumé
+est vide ou dépasse 240 caractères déclenchent le secours local. Le délai global
+est de 15 secondes par défaut, configurable entre 1 et 60 secondes. Les règles
+locales restent conservatrices sur les négations et les descriptions ambiguës.
+
 Le dépôt fournit un parcours fonctionnel avec une structuration Gemini et un secours local fondé sur des règles. Le contrat `structure_report()` isole le moteur du reste de l’API. Le modèle propose une catégorie et un résumé ; il ne vérifie ni l’heure, ni la position, ni la vérité terrain. Une description ambiguë est marquée pour révision humaine.
 
 ## Licence
