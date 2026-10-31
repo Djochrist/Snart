@@ -5,7 +5,9 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .database import init_database
@@ -28,6 +30,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.include_router(reports_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def invalid_request(_: Request, error: RequestValidationError) -> JSONResponse:
+    # Raw inputs can include non-finite numbers or private data. Return only the
+    # error description so even invalid JSON numbers produce a valid 422 response.
+    details = [
+        {key: item[key] for key in ("loc", "msg", "type")}
+        for item in error.errors()
+    ]
+    return JSONResponse(status_code=422, content={"detail": details})
 
 
 @app.get("/api/health", tags=["system"])
