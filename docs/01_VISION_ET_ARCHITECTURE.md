@@ -65,6 +65,7 @@ Requête `multipart/form-data` :
 | `location_accuracy_m` | nombre | non | précision communiquée par le navigateur |
 | `observed_at` | ISO-8601 | non | heure déclarée par le client ; indicatif |
 | `reporter_id` | identifiant pseudonyme | oui | déduplication du dépôt dans le prototype |
+| `client_id` | identifiant généré par le client | non | 8–80 caractères ; un renvoi avec le même `reporter_id` et le même `client_id` renvoie le signalement existant en `200` au lieu de `201` |
 | `photo` | image | non | formats image ; limite de taille côté API |
 
 ### Confirmation — `POST /api/reports/{id}/confirm`
@@ -148,7 +149,7 @@ Les médias en attente sont conservés dans IndexedDB. Une soumission hors ligne
 
 ## 8. Structuration Gemini
 
-Le service utilise `google-genai` et le modèle `gemini-3.5-flash-lite` par défaut. La sortie JSON est limitée à la catégorie, au résumé et au marqueur `needs_review`, puis validée côté serveur. Le choix de catégorie effectué par l’utilisateur reste prioritaire. En l’absence de clé, en cas d’erreur, de délai dépassé ou de réponse invalide, le structurant local `demo_rules` prend le relais sans bloquer le signalement.
+Le service utilise `google-genai` et le modèle Gemma 4 (`gemma-4-26b-a4b-it`) par défaut, à travers l’API Google Gemini : `structuring_mode` vaut donc `gemini` et `model_id` précise le modèle. L’instruction système et le schéma JSON ont été essayés avec succès sur ce modèle le 31 octobre 2026. La sortie JSON est limitée à la catégorie, au résumé et au marqueur `needs_review`, puis validée côté serveur. Le choix de catégorie effectué par l’utilisateur reste prioritaire. En l’absence de clé, en cas d’erreur, de délai dépassé ou de réponse invalide, le structurant local `demo_rules` prend le relais sans bloquer le signalement.
 
 Variables : `GEMINI_API_KEY`, `SNART_MODEL_PROVIDER`, `SNART_MODEL_ID` et `SNART_MODEL_TIMEOUT_SECONDS`. `AI_MODEL` est toléré comme alias de compatibilité. Les paramètres secrets sont locaux (`.env` ou `.env.txt`) et ne sont jamais transmis à la PWA.
 

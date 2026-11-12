@@ -37,7 +37,7 @@ API Python (FastAPI)
         └── SQLite : signalements, confirmations et médias
 ```
 
-La PWA met en cache son interface et conserve les signalements hors ligne en attente d’envoi. La carte, l’API et la structuration nécessitent une connexion ; les signalements en attente sont présentés comme tels jusqu’à leur synchronisation. Le service de structuration utilise l’API Google Gemini (`gemini-3.5-flash-lite`) pour proposer une catégorie et un résumé. Seule la description textuelle du problème est transmise à Gemini ; les coordonnées, l’heure et la photo restent côté serveur. La clé sert à authentifier l’appel côté serveur et n’est jamais fournie au navigateur. Les requêtes Gemini sont configurées sans conservation des interactions (`store=false`). Sans clé ou si l’API est indisponible, une structuration locale par règles prend le relais et sa provenance reste visible. Les clés d’accès ne sont pas stockées dans Git.
+La PWA met en cache son interface et conserve les signalements hors ligne en attente d’envoi. La carte, l’API et la structuration nécessitent une connexion ; les signalements en attente sont présentés comme tels jusqu’à leur synchronisation. Le service de structuration utilise le modèle Gemma 4 (`gemma-4-26b-a4b-it`) à travers l’API Google Gemini pour proposer une catégorie et un résumé. Seule la description textuelle du problème est transmise à Gemini ; les coordonnées, l’heure et la photo restent côté serveur. La clé sert à authentifier l’appel côté serveur et n’est jamais fournie au navigateur. Les requêtes Gemini sont configurées sans conservation des interactions (`store=false`). Sans clé ou si l’API est indisponible, une structuration locale par règles prend le relais et sa provenance reste visible. Les clés d’accès ne sont pas stockées dans Git.
 
 ## Démarrage local
 
@@ -50,7 +50,7 @@ uv sync
 uv run uvicorn snart_api.main:app --app-dir backend --reload
 ```
 
-Le service accepte également le fichier local `.env.txt` déjà utilisé dans certains environnements. `SNART_MODEL_ID` choisit le modèle ; `AI_MODEL` reste accepté comme alias pour la configuration locale existante. Si aucune clé valide n’est disponible, les signalements restent utilisables avec le structurant local de secours.
+Si le frontend est hébergé sur une autre origine que l’API, `SNART_CORS_ORIGINS` liste ses origines exactes, séparées par des virgules. Le service accepte également le fichier local `.env.txt` déjà utilisé dans certains environnements. `SNART_MODEL_ID` choisit le modèle ; `AI_MODEL` reste accepté comme alias pour la configuration locale existante. Si aucune clé valide n’est disponible, les signalements restent utilisables avec le structurant local de secours.
 
 Ouvrir ensuite `http://127.0.0.1:8000`. Le serveur fournit l’interface, les ressources PWA et l’API. La base SQLite de développement est créée localement dans `data/` et n’est pas versionnée.
 
