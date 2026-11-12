@@ -2,7 +2,7 @@
 
 **Plateforme citoyenne de signalement urbain intelligent**
 *Tu signales, l’IA structure.*
-
+Démo : https://snart.onrender.com
 Snart centralise les observations de terrain relatives aux déchets, aux caniveaux bouchés et aux embouteillages. Chaque signalement associe une description, une catégorie structurée, une heure d’observation, une position et, si disponible, une image. Les observations et confirmations alimentent une carte commune ainsi qu’un indice de fiabilité explicable.
 
 Le projet est conçu comme une Progressive Web App (PWA), avec une interface mobile en HTML, CSS et JavaScript vanilla et une API Python. Le dépôt comprend trois branches de travail :
